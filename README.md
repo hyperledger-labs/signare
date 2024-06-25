@@ -19,7 +19,7 @@ Signare, a Hyperledger Lab, is an enterprise grade digital signing solution for 
 - [Initial committers](#initial-committers)
 - [Sponsor](#sponsor)
 
-## Scope of Lab
+## :mag: Scope of Lab
 
 A security concern shared by most users of DLT applications is "keeping their private key private". In the enterprise space FIPS 140 is often used to inform institutions of how they must manage their private keys. Specifically, FIPS 140-2 Level 2 adds requirements for physical tamper-evidence (and/or tamper-resistance) and role-based authentication, which necessitates the use of an HSM or Cloud HSM.
 
