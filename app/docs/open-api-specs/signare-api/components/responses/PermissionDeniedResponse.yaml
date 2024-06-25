@@ -1,0 +1,13 @@
+description: Client does not have sufficient permission. This can happen because the OAuth token does not have the right scopes, the client doesn't have permission, or the API has not been enabled for the client project.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 401
+        status: PERMISSION_DENIED
+        details:
+          errorId: 45
+          message: Permission denied.
+          traceableErrorId: '673286g-782d4-4c58-b3a0-e0a6e1231f23'

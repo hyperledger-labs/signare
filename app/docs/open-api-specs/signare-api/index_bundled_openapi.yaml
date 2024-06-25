@@ -1,0 +1,1829 @@
+openapi: 3.0.0
+info:
+  title: signare public API spec
+  description: signare public API spec
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:34343'
+    description: Local test
+tags:
+  - name: Admin
+    description: signare global management services.
+  - name: Application
+    description: signare application's management services.
+paths:
+  /admin/modules:
+    post:
+      operationId: admin.modules.create
+      tags:
+        - Admin
+      summary: Creates a Hardware Security Module (HSM)
+      description: Creates an HSM configuration
+      requestBody:
+        description: HSM to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleCreation'
+      responses:
+        '201':
+          description: Created HSM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    get:
+      operationId: admin.modules.list
+      tags:
+        - Admin
+      summary: Lists Hardware Security Modules (HSMs)
+      description: Lists HSMs configured
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/OrderDirection'
+      responses:
+        '200':
+          description: Collection of HSMs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleCollection'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/admin/modules/{moduleId}':
+    get:
+      operationId: admin.modules.describe
+      tags:
+        - Admin
+      summary: Gets a Hardware Security Module (HSM)
+      description: Describes the specified HSM configuration
+      parameters:
+        - $ref: '#/components/parameters/ModuleId'
+      responses:
+        '200':
+          description: HSM details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    put:
+      operationId: admin.modules.edit
+      tags:
+        - Admin
+      summary: Updates a Hardware Security Module (HSM)
+      description: Updates the specified HSM configuration
+      parameters:
+        - $ref: '#/components/parameters/ModuleId'
+      requestBody:
+        description: Information to update the HSM configuration. Missing or empty fields will delete that information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleUpdate'
+      responses:
+        '200':
+          description: HSM details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    delete:
+      operationId: admin.modules.remove
+      tags:
+        - Admin
+      summary: Deletes a Hardware Security Module (HSM)
+      description: Deletes the specified HSM configuration
+      parameters:
+        - $ref: '#/components/parameters/ModuleId'
+      responses:
+        '200':
+          description: Deleted HSM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/admin/modules/{moduleId}/slots':
+    post:
+      operationId: admin.slots.create
+      tags:
+        - Admin
+      summary: Creates a slot for a given Hardware Security Module (HSM)
+      description: |
+        Creates an HSM's slot configuration for the specified application. It is not possible
+        to create two slots pointing to the same `applicationId`. It is not possible to create two
+        slots that share the same `hardwareSecurityModuleId` and `slot` number.
+      parameters:
+        - $ref: '#/components/parameters/ModuleId'
+      requestBody:
+        description: Slot to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotCreation'
+      responses:
+        '201':
+          description: Created Slot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    get:
+      operationId: admin.slots.list
+      tags:
+        - Admin
+      summary: Lists slots for a given Hardware Security Module (HSM)
+      description: Lists configured slots for a given HSM
+      parameters:
+        - $ref: '#/components/parameters/ApplicationIdQuery'
+        - $ref: '#/components/parameters/ModuleId'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/OrderDirection'
+      responses:
+        '200':
+          description: Collection of slots
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotCollection'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/admin/modules/{moduleId}/slots/{slotId}':
+    get:
+      operationId: admin.slots.describe
+      tags:
+        - Admin
+      summary: Gets a slot from a Hardware Security Module (HSM)
+      description: Describes the specified slot from the specified HSM
+      parameters:
+        - $ref: '#/components/parameters/ModuleId'
+        - $ref: '#/components/parameters/SlotId'
+      responses:
+        '200':
+          description: HSM details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    delete:
+      operationId: admin.slots.remove
+      tags:
+        - Admin
+      summary: Deletes a slot from a Hardware Security Module (HSM)
+      description: Deletes the specified slot configuration from the specified HSM
+      parameters:
+        - $ref: '#/components/parameters/ModuleId'
+        - $ref: '#/components/parameters/SlotId'
+      responses:
+        '200':
+          description: Deleted Slot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/admin/modules/{moduleId}/slots/{slotId}:update-pin':
+    post:
+      operationId: admin.slots.updatePin
+      tags:
+        - Admin
+      summary: Updates the PIN of the slot
+      description: Update the slot's PIN of a given Hardware Security Module (HSM)
+      parameters:
+        - $ref: '#/components/parameters/ModuleId'
+        - $ref: '#/components/parameters/SlotId'
+      requestBody:
+        description: The new PIN of the slot
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotUpdatePin'
+      responses:
+        '200':
+          description: Slot details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  /admin/users:
+    post:
+      operationId: admin.users.create
+      tags:
+        - Admin
+      summary: Creates a signer administrator
+      description: Creates a new signer administrator user
+      requestBody:
+        description: Administrator user to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserCreation'
+      responses:
+        '201':
+          description: Created administrator user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequestResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    get:
+      operationId: admin.users.list
+      tags:
+        - Admin
+      summary: Lists signer administrators
+      description: Lists all the signer administrator users
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/OrderDirection'
+      responses:
+        '200':
+          description: Collection of administrator users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserCollection'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/admin/users/{adminUserId}':
+    get:
+      operationId: admin.users.describe
+      tags:
+        - Admin
+      summary: Gets a signer administrator
+      description: Describes the specified signer administrator user
+      parameters:
+        - $ref: '#/components/parameters/AdminUserId'
+      responses:
+        '200':
+          description: Administrator user details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    put:
+      operationId: admin.users.edit
+      tags:
+        - Admin
+      summary: Updates a signer administrator
+      description: Updates the specified signer administrator user
+      parameters:
+        - $ref: '#/components/parameters/AdminUserId'
+      requestBody:
+        description: Information to update the signer administrator user. Missing or empty fields will delete that information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserUpdate'
+      responses:
+        '200':
+          description: Administrator user details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    delete:
+      operationId: admin.users.remove
+      tags:
+        - Admin
+      summary: Deletes a signer administrator
+      description: Deletes the specified signer administrator user
+      parameters:
+        - $ref: '#/components/parameters/AdminUserId'
+      responses:
+        '200':
+          description: Deleted administrator user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  /applications:
+    post:
+      operationId: admin.applications.create
+      tags:
+        - Admin
+      summary: Creates an application
+      description: Creates a new application
+      requestBody:
+        description: Application to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationCreation'
+      responses:
+        '201':
+          description: Created application
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    get:
+      operationId: admin.applications.list
+      tags:
+        - Admin
+      summary: Lists applications
+      description: Lists all the applications
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/OrderDirection'
+      responses:
+        '200':
+          description: Collection of applications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationCollection'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/applications/{applicationId}':
+    get:
+      operationId: admin.applications.describe
+      tags:
+        - Admin
+      summary: Gets an application
+      description: Describes the specified application
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+      responses:
+        '200':
+          description: Application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    put:
+      operationId: admin.applications.edit
+      tags:
+        - Admin
+      summary: Updates an application
+      description: Updates the specified application
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+      requestBody:
+        description: Information to update the application. Missing or empty fields will delete that information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationUpdate'
+      responses:
+        '200':
+          description: Application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    delete:
+      operationId: admin.applications.remove
+      tags:
+        - Admin
+      summary: Deletes an application
+      description: Deletes the specified application
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+      responses:
+        '200':
+          description: Deleted application
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/applications/{applicationId}/users':
+    post:
+      operationId: application.users.create
+      tags:
+        - Application
+      summary: Creates a user
+      description: Creates a new user in the specified application
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+      requestBody:
+        description: User to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreation'
+      responses:
+        '201':
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    get:
+      operationId: application.users.list
+      tags:
+        - Application
+      summary: Lists users
+      description: Lists all the users in the specified application
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/OrderDirection'
+      responses:
+        '200':
+          description: Collection of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCollection'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/applications/{applicationId}/users/{userId}':
+    get:
+      operationId: application.users.describe
+      tags:
+        - Application
+      summary: Gets a user
+      description: Describes the specified user
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    put:
+      operationId: application.users.edit
+      tags:
+        - Application
+      summary: Updates a user
+      description: Updates the specified user
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        description: Information to update the user. Missing or empty fields will delete that information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+    delete:
+      operationId: application.users.remove
+      tags:
+        - Application
+      summary: Deletes a user
+      description: Deletes the specified user
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Deleted user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/applications/{applicationId}/users/{userId}/accounts':
+    post:
+      operationId: application.accounts.create
+      tags:
+        - Application
+      summary: Creates an account
+      description: Creates a new account that will be assigned to the specified user
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        description: Account to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCreation'
+      responses:
+        '201':
+          description: The user detail to whom the account was added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+  '/applications/{applicationId}/users/{userId}/accounts/{accountId}':
+    delete:
+      operationId: application.accounts.remove
+      tags:
+        - Application
+      summary: Deletes an account
+      description: Removes the specified account from the accounts assigned to the specified user
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: The user detail to whom the account was removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDeniedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '412':
+          $ref: '#/components/responses/FailedPreconditionResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+components:
+  schemas:
+    ModuleSpec:
+      type: object
+      x-required: mandatory
+      additionalProperties: false
+      properties:
+        configuration:
+          discriminator:
+            propertyName: hsmKind
+            mapping:
+              softHSM: '#/components/schemas/SoftHSM'
+          oneOf:
+            - $ref: '#/components/schemas/SoftHSM'
+          x-required: optional
+          nullable: true
+          additionalProperties: false
+          required:
+            - hsmKind
+        description:
+          type: string
+          x-required: mandatory
+          description: |
+            Description of the resource.
+      required:
+        - configuration
+        - description
+    ModuleCreation:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaCreation'
+        spec:
+          $ref: '#/components/schemas/ModuleSpec'
+      example:
+        meta:
+          id: hsm-1
+        spec:
+          configuration:
+            hsmKind: softHSM
+          description: my hardware security module
+      required:
+        - spec
+    SoftHSM:
+      type: object
+      additionalProperties: false
+      properties:
+        hsmKind:
+          type: string
+          enum:
+            - softHSM
+          x-required: mandatory
+          nullable: false
+          description: The kind of HSM
+      required:
+        - hsmKind
+    ModuleDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaDetail'
+        spec:
+          $ref: '#/components/schemas/ModuleSpec'
+      example:
+        meta:
+          id: hsm-1
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+          creationDate: '1581675232372'
+          lastUpdate: '1581675232372'
+        spec:
+          configuration:
+            hsmKind: softHSM
+          description: my hardware security module
+      required:
+        - meta
+        - spec
+    ModuleUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaUpdate'
+        spec:
+          $ref: '#/components/schemas/ModuleSpec'
+      required:
+        - meta
+        - spec
+      example:
+        meta:
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+        spec:
+          configuration:
+            hsmKind: softHSM
+          description: my hardware security module
+    ModuleCollection:
+      allOf:
+        - type: object
+          properties:
+            items:
+              type: array
+              x-required: mandatory
+              description: collection of Hardware Security Modules.
+              items:
+                $ref: '#/components/schemas/ModuleDetail'
+          required:
+            - items
+        - $ref: '#/components/schemas/CollectionPage'
+    SlotCreation:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaCreation'
+        spec:
+          type: object
+          x-required: mandatory
+          nullable: false
+          additionalProperties: false
+          properties:
+            applicationId:
+              type: string
+              x-required: mandatory
+              nullable: false
+              description: |
+                Identifier of the application that owns the slot.
+            slot:
+              type: string
+              x-required: mandatory
+              nullable: false
+              description: |
+                Slot number assigned by the HSM.
+            pin:
+              type: string
+              x-required: mandatory
+              nullable: false
+              description: |
+                PIN that provides access to the slot number inside the HSM.
+          required:
+            - applicationId
+            - slot
+            - pin
+      example:
+        meta:
+          id: slot-1
+        spec:
+          applicationId: application-1
+          slot: '342'
+          pin: '123'
+      required:
+        - spec
+    SlotDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaDetail'
+        spec:
+          type: object
+          x-required: mandatory
+          additionalProperties: false
+          properties:
+            hardwareSecurityModuleId:
+              type: string
+              x-required: mandatory
+              description: |
+                Identifier of the Hardware Security Module (HSM) where the slot belongs.
+            applicationId:
+              type: string
+              x-required: mandatory
+              description: |
+                Identifier of the application that owns the slot.
+            slot:
+              type: string
+              x-required: mandatory
+              description: |
+                Slot number assigned by the HSM.
+          required:
+            - hardwareSecurityModuleId
+            - applicationId
+            - slot
+      example:
+        meta:
+          id: slot-1
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+          creationDate: '1581675232372'
+          lastUpdate: '1581675232372'
+        spec:
+          hardwareSecurityModuleId: module-1
+          applicationId: application-1
+          slot: '342'
+      required:
+        - meta
+        - spec
+    SlotCollection:
+      allOf:
+        - type: object
+          properties:
+            items:
+              type: array
+              x-required: mandatory
+              description: collection of slots for a given Hardware Security Module.
+              items:
+                $ref: '#/components/schemas/SlotDetail'
+          required:
+            - items
+        - $ref: '#/components/schemas/CollectionPage'
+    SlotUpdatePin:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaUpdate'
+        spec:
+          type: object
+          x-required: optional
+          nullable: true
+          additionalProperties: false
+          properties:
+            pin:
+              type: string
+              x-required: mandatory
+              nullable: false
+              description: |
+                PIN that provides access to the slot number inside the HSM.
+          required:
+            - pin
+      example:
+        meta:
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+        spec:
+          pin: '698'
+      required:
+        - meta
+        - spec
+    AdminUserDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaDetail'
+        spec:
+          type: object
+          x-required: mandatory
+          additionalProperties: false
+          properties:
+            roles:
+              type: array
+              x-required: mandatory
+              items:
+                type: string
+                description: |
+                  List of roles assigned to the administrator user
+                example:
+                  - SignerAdministrator
+            description:
+              type: string
+              x-required: mandatory
+              description: |
+                Description of the resource.
+          required:
+            - roles
+            - description
+      example:
+        meta:
+          id: admin-user-1
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+          creationDate: '1581675232372'
+          lastUpdate: '1581675232372'
+        spec:
+          roles:
+            - SignerAdministrator
+          description: my admin user
+      required:
+        - meta
+        - spec
+    AdminUserCreation:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaCreation'
+        spec:
+          type: object
+          x-required: optional
+          nullable: true
+          additionalProperties: false
+          properties:
+            description:
+              type: string
+              x-required: optional
+              nullable: true
+              maxLength: 256
+              description: |
+                Description of the resource.
+      example:
+        meta:
+          id: admin-user-1
+        spec:
+          description: my admin user
+    AdminUserUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaUpdate'
+        spec:
+          type: object
+          x-required: optional
+          nullable: true
+          additionalProperties: false
+          properties:
+            description:
+              type: string
+              x-required: optional
+              nullable: true
+              maxLength: 256
+              description: |
+                Description of the resource.
+      example:
+        meta:
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+        spec:
+          description: my admin user
+      required:
+        - meta
+    AdminUserCollection:
+      allOf:
+        - type: object
+          properties:
+            items:
+              type: array
+              x-required: mandatory
+              description: collection of signer administrator users.
+              items:
+                $ref: '#/components/schemas/AdminUserDetail'
+          required:
+            - items
+        - $ref: '#/components/schemas/CollectionPage'
+    ApplicationDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaDetail'
+        spec:
+          type: object
+          x-required: mandatory
+          additionalProperties: false
+          properties:
+            chainId:
+              type: string
+              x-required: mandatory
+              description: |
+                The chain identifier with which the application interacts. It must be a valid integer.
+            description:
+              type: string
+              x-required: mandatory
+              description: |
+                Description of the resource.
+          required:
+            - chainId
+            - description
+      example:
+        meta:
+          id: application-1
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+          creationDate: '1581675232372'
+          lastUpdate: '1581675232372'
+        spec:
+          chainId: '44844'
+          description: my application
+      required:
+        - meta
+        - spec
+    ApplicationUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaUpdate'
+        spec:
+          type: object
+          x-required: optional
+          nullable: true
+          additionalProperties: false
+          properties:
+            chainId:
+              type: string
+              x-required: mandatory
+              nullable: false
+              description: |
+                The chain identifier with which the application interacts. It must be a valid integer.
+            description:
+              type: string
+              x-required: optional
+              nullable: true
+              maxLength: 256
+              description: |
+                Description of the resource.
+          required:
+            - chainId
+      example:
+        meta:
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+        spec:
+          chainId: '55966'
+          description: my application
+      required:
+        - meta
+        - spec
+    ApplicationCreation:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaCreation'
+        spec:
+          type: object
+          x-required: mandatory
+          nullable: false
+          additionalProperties: false
+          properties:
+            chainId:
+              type: string
+              x-required: mandatory
+              nullable: false
+              description: |
+                The chain identifier with which the application will interact. It must be a valid integer.
+            description:
+              type: string
+              x-required: optional
+              nullable: true
+              maxLength: 256
+              description: |
+                Description of the resource.
+          required:
+            - chainId
+      example:
+        meta:
+          id: application-1
+        spec:
+          chainId: '44844'
+          description: my application
+      required:
+        - spec
+    ApplicationCollection:
+      allOf:
+        - type: object
+          properties:
+            items:
+              type: array
+              x-required: mandatory
+              description: collection of applications.
+              items:
+                $ref: '#/components/schemas/ApplicationDetail'
+          required:
+            - items
+        - $ref: '#/components/schemas/CollectionPage'
+    UserCreation:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaCreation'
+        spec:
+          type: object
+          x-required: mandatory
+          nullable: false
+          additionalProperties: false
+          properties:
+            roles:
+              type: array
+              x-required: mandatory
+              nullable: false
+              items:
+                type: string
+                description: |
+                  List of roles assigned to the user
+                example:
+                  - ApplicationAdministrator
+                  - TransactionSigner
+            description:
+              type: string
+              x-required: optional
+              nullable: true
+              maxLength: 256
+              description: |
+                Description of the resource.
+          required:
+            - roles
+      example:
+        meta:
+          id: user-1
+        spec:
+          roles:
+            - ApplicationAdministrator
+            - TransactionSigner
+          description: my user
+      required:
+        - spec
+    UserDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaDetail'
+        spec:
+          type: object
+          x-required: mandatory
+          additionalProperties: false
+          properties:
+            roles:
+              type: array
+              x-required: mandatory
+              items:
+                type: string
+                description: |
+                  List of roles assigned to the user
+                example:
+                  - ApplicationAdministrator
+                  - TransactionSigner
+            accounts:
+              type: array
+              x-required: mandatory
+              items:
+                type: string
+                description: |
+                  List of ethereum accounts assigned to the user
+                example:
+                  - '0xc0ffee254729296a45a3885639AC7E10F9d54979'
+                  - '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E'
+            description:
+              type: string
+              x-required: mandatory
+              description: |
+                Description of the resource.
+          required:
+            - roles
+            - accounts
+            - description
+      example:
+        meta:
+          id: user-1
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+          creationDate: '1581675232372'
+          lastUpdate: '1581675232372'
+        spec:
+          roles:
+            - ApplicationAdministrator
+            - TransactionSigner
+          accounts:
+            - '0xc0ffee254729296a45a3885639AC7E10F9d54979'
+            - '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E'
+          description: my user
+      required:
+        - meta
+        - spec
+    UserUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResourceMetaUpdate'
+        spec:
+          type: object
+          x-required: optional
+          nullable: true
+          additionalProperties: false
+          properties:
+            roles:
+              type: array
+              x-required: mandatory
+              nullable: false
+              items:
+                type: string
+                description: |
+                  List of roles assigned to the user
+                example:
+                  - TransactionSigner
+            description:
+              type: string
+              x-required: optional
+              nullable: true
+              maxLength: 256
+              description: |
+                Description of the resource.
+          required:
+            - roles
+      example:
+        meta:
+          resourceVersion: 7e032829-249d-4498-aa3e-344a16cd6a93
+        spec:
+          roles:
+            - TransactionSigner
+          description: my user
+      required:
+        - meta
+        - spec
+    UserCollection:
+      allOf:
+        - type: object
+          properties:
+            items:
+              type: array
+              x-required: mandatory
+              description: collection of users.
+              items:
+                $ref: '#/components/schemas/UserDetail'
+          required:
+            - items
+        - $ref: '#/components/schemas/CollectionPage'
+    AccountCreation:
+      type: object
+      additionalProperties: false
+      properties:
+        spec:
+          type: object
+          x-required: mandatory
+          nullable: false
+          additionalProperties: false
+          properties:
+            accounts:
+              type: array
+              x-required: mandatory
+              nullable: false
+              items:
+                type: string
+                description: |
+                  List of ethereum accounts that will be assigned to the user
+                example:
+                  - '0xc0ffee254729296a45a3885639AC7E10F9d54979'
+                  - '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E'
+          required:
+            - accounts
+      example:
+        spec:
+          accounts:
+            - '0xc0ffee254729296a45a3885639AC7E10F9d54979'
+            - '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E'
+      required:
+        - spec
+    CollectionPage:
+      type: object
+      additionalProperties: false
+      description: Page data of the query
+      properties:
+        limit:
+          type: integer
+          x-required: mandatory
+          description: The size of the collection's page
+          example: 100
+        offset:
+          type: integer
+          x-required: mandatory
+          description: The entry of the table on which the collection starts
+          example: 0
+        moreItems:
+          type: boolean
+          x-required: mandatory
+          description: True if there are more pages to collect from the database
+          example: true
+      required:
+        - limit
+        - offset
+        - moreItems
+    BaseError:
+      type: object
+      properties:
+        error:
+          type: object
+          x-required: mandatory
+          nullable: false
+          properties:
+            code:
+              type: integer
+              x-required: mandatory
+              nullable: false
+              description: Response code. It is always aligned with http response code
+            status:
+              type: string
+              x-required: mandatory
+              nullable: false
+              enum:
+                - INVALID_ARGUMENT
+                - BAD_REQUEST
+                - PRECONDITION_FAILED
+                - UNAUTHENTICATED
+                - PERMISSION_DENIED
+                - NOT_FOUND
+                - ALREADY_EXISTS
+                - INTERNAL
+                - NOT_IMPLEMENTED
+                - BAD_GATEWAY
+                - UNAVAILABLE
+                - TIMEOUT
+                - TOO_MANY_REQ
+              description: |
+                Error category. Next list shows all possible statuses (and related codes):
+                  * 400    `INVALID_ARGUMENT` Client specified an invalid argument. Check error details message for more information.
+                  * 400    `ALREADY_EXISTS`  The resource that a client tried to create already exists.
+                  * 401    `UNAUTHENTICATED`  Request not authenticated due to missing, invalid, or expired OAuth token.
+                  * 403    `PERMISSION_DENIED`  Client does not have sufficient permission. This can happen because the OAuth token does not have the right scopes, the client doesn't have permission, or the API has not been enabled for the client project.
+                  * 404    `NOT_FOUND`  A specified resource is not found, or the request is rejected by undisclosed reasons, such as whitelisting.
+                  * 412    `PRECONDITION_FAILED`  Request can not be executed in the current system state.
+                  * 429    `TOO_MANY_REQ` Too many incoming request at this moment.
+                  * 500    `INTERNAL` Internal server error. Typically a server bug.
+                  * 501    `NOT_IMPLEMENTED`  API method not implemented by the server.
+                  * 502    `BAD_GATEWAY`  The server, while acting as a gateway or proxy, received an invalid response from the upstream server.
+                  * 503    `UNAVAILABLE`  Service unavailable. Typically the server is down.
+                  * 504    `TIMEOUT`  Upstream request deadline exceeded.
+            details:
+              type: object
+              x-required: mandatory
+              nullable: false
+              properties:
+                errorId:
+                  type: integer
+                  x-required: mandatory
+                  nullable: false
+                  description: The id of the error. Check the error catalogue.
+                message:
+                  type: string
+                  x-required: mandatory
+                  nullable: false
+                  description: Human readable description of the error.
+                traceableErrorId:
+                  type: string
+                  x-required: mandatory
+                  nullable: false
+                  description: Unique Error Identifier that can be used to track the error.
+              required:
+                - errorId
+                - message
+                - traceableErrorId
+          required:
+            - code
+            - status
+            - details
+      required:
+        - error
+    ResourceMetaDetail:
+      type: object
+      x-required: mandatory
+      nullable: false
+      description: |
+        Metainformation of the resource
+      properties:
+        id:
+          type: string
+          maxLength: 64
+          x-required: mandatory
+          nullable: false
+          description: |
+            The unique identifier of the resource. It must be aligned with the value in the endpoint path.
+        resourceVersion:
+          type: string
+          x-required: mandatory
+          nullable: false
+          description: |
+            An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection,
+            and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources.
+            Populated by the system. Read-only. Value must be treated as opaque by clients
+          example: 7e032829-249d-4498-aa3e-344a16cd6a93
+        creationDate:
+          type: string
+          x-required: mandatory
+          nullable: false
+          description: |
+            Instant when the resource was registered in the signare. Read only
+            Unix time in milliseconds UTC.
+          example: '1581675232372'
+        lastUpdate:
+          type: string
+          x-required: mandatory
+          nullable: false
+          description: |
+            Last instant when the resource was updated. Read only
+            Unix time in milliseconds UTC.
+          example: '1581675232372'
+      required:
+        - id
+        - resourceVersion
+        - creationDate
+        - lastUpdate
+    ResourceMetaCreation:
+      type: object
+      x-required: optional
+      nullable: true
+      description: |
+        Meta information of the resource
+      properties:
+        id:
+          type: string
+          maxLength: 64
+          x-required: optional
+          nullable: true
+          description: |
+            The unique identifier of the resource. If not present, a random identifier will be generated for the created resource.
+    ResourceMetaUpdate:
+      type: object
+      x-required: mandatory
+      nullable: false
+      description: |
+        Meta information of the resource
+      properties:
+        resourceVersion:
+          type: string
+          x-required: mandatory
+          nullable: false
+          description: |
+            An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection,
+            and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources.
+            Populated by the system. Read-only. Value must be treated as opaque by clients
+          example: 7e032829-249d-4498-aa3e-344a16cd6a93
+      required:
+        - resourceVersion
+  responses:
+    BadRequestResponse:
+      description: Error with the request input parameters. Invalid argument in the given parameters or the resource that a client tried to create already exists.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          examples:
+            AlreadyExists:
+              summary: Already Exists Error
+              value:
+                error:
+                  code: 400
+                  status: ALREADY_EXISTS
+                  details:
+                    errorId: 11
+                    message: User already exists
+                    traceableErrorId: 822356s2f-02h2-4c21-g2k4-u8o0d2221g77
+            BadRequest:
+              summary: Invalid Argument Error
+              value:
+                error:
+                  code: 400
+                  status: INVALID_ARGUMENT
+                  details:
+                    errorId: 12
+                    message: Invalid address.
+                    traceableErrorId: 82673438f-00d9-4c58-b3a0-e0a6e1231f23
+    BadGatewayResponse:
+      description: Resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 502
+              status: BAD_GATEWAY
+              details:
+                errorId: 33
+                message: The RPC call did not succeed
+                traceableErrorId: 2699538f-00d9-4c58-b3a0-e0a6e1231f24
+    FailedPreconditionResponse:
+      description: Request can not be executed in the current system state.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 412
+              status: PRECONDITION_FAILED
+              details:
+                errorId: 31
+                message: User info couldn't be updated because user does not exists.
+                traceableErrorId: 7851921y-2254f-4c58-b3a0-e0a6e1231f23
+    InternalServerErrorResponse:
+      description: Internal server error. Contact with Support or Admin with traceableErrorId for diagnose
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 500
+              status: INTERNAL
+              details:
+                errorId: -1
+                message: Sorry you are experiencing an unexpected error. Please try again and if the problem persists contact Support Team
+                traceableErrorId: 2699538f-00d9-4c58-b3a0-e0a6e1231f23
+    NotFoundResponse:
+      description: Resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 404
+              status: NOT_FOUND
+              details:
+                errorId: 29
+                message: User not found
+                traceableErrorId: 2699538f-00d9-4c58-b3a0-e0a6e1231f23
+    NotImplementedResponse:
+      description: API method not implemented by the server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 501
+              status: NOT_IMPLEMENTED
+              details:
+                errorId: 39
+                message: API method not implemented by the server.
+                traceableErrorId: 9060122k-2254f-4c58-b3a0-e0a6e1231f23
+    PermissionDeniedResponse:
+      description: 'Client does not have sufficient permission. This can happen because the OAuth token does not have the right scopes, the client doesn''t have permission, or the API has not been enabled for the client project.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 401
+              status: PERMISSION_DENIED
+              details:
+                errorId: 45
+                message: Permission denied.
+                traceableErrorId: 673286g-782d4-4c58-b3a0-e0a6e1231f23
+    TimeoutResponse:
+      description: Upstream request deadline exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 504
+              status: TIMEOUT
+              details:
+                errorId: 22
+                message: Upstream request deadline exceeded.
+                traceableErrorId: 94585153g-782d4-4c58-c3ds0-e0a6e2771f23
+    TooManyRequestResponse:
+      description: Too many incoming request at this moment.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 429
+              status: TOO_MANY_REQ
+              details:
+                errorId: 51
+                message: Too many incoming request at this moment.
+                traceableErrorId: 8380122k-2254f-4c58-b3a0-e0a6e1231f23
+    UnauthenticatedResponse:
+      description: 'Request not authenticated due to missing, invalid, or expired OAuth token.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 401
+              status: UNAUTHENTICATED
+              details:
+                errorId: 29
+                message: Request not authenticated.
+                traceableErrorId: 673286g-782d4-4c58-b3a0-e0a6e1231f23
+    UnavailableResponse:
+      description: Service unavailable. Typically the server is down.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseError'
+          example:
+            error:
+              code: 503
+              status: UNAVAILABLE
+              details:
+                errorId: 78
+                message: Service unavailable. Typically the server is down.
+                traceableErrorId: 9023153g-782d4-4c58-b3a0-e0a6e1231f23
+  parameters:
+    ApplicationId:
+      name: applicationId
+      in: path
+      description: Application identifier
+      required: true
+      schema:
+        type: string
+      example: application-1
+    ModuleId:
+      name: moduleId
+      in: path
+      description: Hardware Security Module (HSM) identifier
+      required: true
+      schema:
+        type: string
+      example: hsm-1
+    SlotId:
+      name: slotId
+      in: path
+      description: Slot identifier
+      required: true
+      schema:
+        type: string
+      example: slot-1
+    AdminUserId:
+      name: adminUserId
+      in: path
+      description: Admin user identifier
+      required: true
+      schema:
+        type: string
+      example: admin-1
+    UserId:
+      name: userId
+      in: path
+      description: User identifier
+      required: true
+      schema:
+        type: string
+      example: user-1
+    AccountId:
+      name: accountId
+      in: path
+      description: Ethereum account address
+      required: true
+      schema:
+        type: string
+      example: '0xc0ffee254729296a45a3885639AC7E10F9d54979'
+    ApplicationIdQuery:
+      name: applicationId
+      required: false
+      in: query
+      description: Application identifier of the resource/s
+      schema:
+        type: string
+      example: application-1
+    Limit:
+      name: limit
+      required: false
+      in: query
+      description: The numbers of items to return
+      schema:
+        type: integer
+        default: 30
+        example: 5
+    Offset:
+      name: offset
+      required: false
+      in: query
+      description: The number of items to skip before starting to collect the result set
+      schema:
+        type: integer
+        default: 0
+        example: 10
+    OrderBy:
+      name: orderBy
+      required: false
+      in: query
+      description: |
+        Resources ordered by one of these fields:
+        * `creationDate` - Date when the resource was created.
+        * `lastUpdate` - Date when the resource was last updated.
+      schema:
+        type: string
+        enum:
+          - creationDate
+          - lastUpdate
+        default: creationDate
+        example: lastUpdate
+    OrderDirection:
+      name: orderDirection
+      in: query
+      required: false
+      description: |
+        Order direction of the listed resources:
+        * `asc` - Ascending order.
+        * `desc` - Descending order.
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: desc
+        example: asc

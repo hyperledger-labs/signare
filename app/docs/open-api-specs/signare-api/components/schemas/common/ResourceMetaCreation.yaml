@@ -1,0 +1,13 @@
+type: object
+x-required: optional
+nullable: true
+description: |
+  Meta information of the resource
+properties:
+  id:
+    type: string
+    maxLength: 64
+    x-required: optional
+    nullable: true
+    description: |
+      The unique identifier of the resource. If not present, a random identifier will be generated for the created resource.

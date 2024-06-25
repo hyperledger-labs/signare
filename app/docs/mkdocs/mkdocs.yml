@@ -1,0 +1,126 @@
+site_name: Signare
+site_author: Hyper Ledger Labs
+site_description: >-
+  Signare documentation
+
+# Repository
+repo_name: hyperledger-labs/signare
+repo_url: https://github.com/hyperledger-labs/signare
+
+# Navigation definition
+nav:
+  - Home: index.md
+  - Getting started: getting-started/getting-started.md
+  - Reference:
+     - reference/index.md
+     - Configuration reference: reference/configuration.md
+     - OpenAPI Specification: reference/openapi-spec.md
+     - JSON RPC API Specification: reference/json-rpc-api.md
+     - Role base access control: reference/rbac.md
+     - Security: reference/security.md
+     - Trace Context: reference/trace-context.md
+     - Database reference: reference/database.md
+  - User guides:
+     - user-guides/index.md
+     - How to configure users: user-guides/how-to-configure-users.md
+     - How to create an account: user-guides/how-to-create-an-account.md
+     - How to sign a transaction: user-guides/how-to-sign-a-tx.md
+  - Glossary: glossary/glossary.md
+  - Observability:
+     - observability/index.md
+     - Metrics: observability/metrics.md
+     - Dashboard: observability/dashboard.md
+     - Troubleshooting: observability/troubleshooting.md
+  - Contribute:
+      - contribute/index.md
+      - Contributing: contribute/contributing.md
+      - Code standards: contribute/code-standards.md
+      - Documentation standards: contribute/documentation-standards.md
+      - Integrating with a new HSM: contribute/integrating-new-hsm.md
+      - PR guidelines: contribute/pr-guidelines.md
+  - Changelog: CHANGELOG.md
+
+# Theme configuration
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.footer
+    - navigation.indexes
+    - navigation.expand
+    - navigation.tracking
+    - navigation.top
+    - search.suggest
+    - search.share
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+    - toc.follow
+    - toc.integrate
+    - navigation.instant
+    - navigation.instant.progress
+  language: en
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+      primary: teal
+      accent: teal
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+      primary: teal
+      accent: teal
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/favicon.png
+  logo: assets/favicon.png
+
+# Footer extras
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/hyperledger-labs/signare
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com # TODO change this to the hosted signare image url
+
+# Extensions definition
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - def_list
+  - tables
+  - attr_list
+  - md_in_html
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+# Plugins definition
+plugins:
+  - search
+  - plantuml:
+      puml_url: https://www.plantuml.com/plantuml/
+  - render_swagger:
+      javascript: ../../assets/js/swagger-ui-bundle.js
+      css: ../../assets/css/swagger-ui.css
+      allow_arbitrary_locations : true
+

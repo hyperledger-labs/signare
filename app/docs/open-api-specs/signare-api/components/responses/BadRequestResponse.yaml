@@ -1,0 +1,26 @@
+description: Error with the request input parameters. Invalid argument in the given parameters or the resource that a client tried to create already exists.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    examples:
+      AlreadyExists:
+        summary: Already Exists Error
+        value:
+          error:
+            code: 400
+            status: ALREADY_EXISTS
+            details:
+              errorId: 11
+              message: User already exists
+              traceableErrorId: '822356s2f-02h2-4c21-g2k4-u8o0d2221g77'
+      BadRequest:
+        summary: Invalid Argument Error
+        value:
+          error:
+            code: 400
+            status: INVALID_ARGUMENT
+            details:
+              errorId: 12
+              message: Invalid address.
+              traceableErrorId: '82673438f-00d9-4c58-b3a0-e0a6e1231f23'

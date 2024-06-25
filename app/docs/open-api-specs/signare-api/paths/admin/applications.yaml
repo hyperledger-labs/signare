@@ -1,0 +1,50 @@
+post:
+  operationId: admin.applications.create
+  tags:
+    - Admin
+  summary: Creates an application
+  description: Creates a new application
+  requestBody:
+    description: Application to create
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/_index.yaml#/schemas/ApplicationCreation'
+  responses:
+    '201':
+      description: Created application
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/ApplicationDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+get:
+  operationId: admin.applications.list
+  tags:
+    - Admin
+  summary: Lists applications
+  description: Lists all the applications
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/Limit'
+    - $ref: '../../components/_index.yaml#/parameters/Offset'
+    - $ref: '../../components/_index.yaml#/parameters/OrderBy'
+    - $ref: '../../components/_index.yaml#/parameters/OrderDirection'
+  responses:
+    '200':
+      description: Collection of applications
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/ApplicationCollection'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

@@ -1,0 +1,44 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaDetail'
+  spec:
+    type: object
+    x-required: mandatory
+    additionalProperties: false
+    properties:
+      hardwareSecurityModuleId:
+        type: string
+        x-required: mandatory
+        description: |
+          Identifier of the Hardware Security Module (HSM) where the slot belongs.
+      applicationId:
+        type: string
+        x-required: mandatory
+        description: |
+          Identifier of the application that owns the slot.
+      slot:
+        type: string
+        x-required: mandatory
+        description: |
+          Slot number assigned by the HSM.
+    required:
+      - hardwareSecurityModuleId
+      - applicationId
+      - slot
+
+example:
+  meta:
+    id: 'slot-1'
+    resourceVersion: '7e032829-249d-4498-aa3e-344a16cd6a93'
+    creationDate: '1581675232372'
+    lastUpdate: '1581675232372'
+  spec:
+    hardwareSecurityModuleId: 'module-1'
+    applicationId: 'application-1'
+    slot: '342'
+
+required:
+  - meta
+  - spec

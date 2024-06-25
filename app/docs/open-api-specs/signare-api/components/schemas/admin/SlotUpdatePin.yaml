@@ -1,0 +1,29 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaUpdate'
+  spec:
+    type: object
+    x-required: optional
+    nullable: true
+    additionalProperties: false
+    properties:
+      pin:
+        type: string
+        x-required: mandatory
+        nullable: false
+        description: |
+          PIN that provides access to the slot number inside the HSM.
+    required:
+      - pin
+
+example:
+  meta:
+    resourceVersion: '7e032829-249d-4498-aa3e-344a16cd6a93'
+  spec:
+    pin: '698'
+
+required:
+  - meta
+  - spec

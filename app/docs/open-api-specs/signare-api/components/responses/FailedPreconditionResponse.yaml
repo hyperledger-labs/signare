@@ -1,0 +1,13 @@
+description: Request can not be executed in the current system state.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 412
+        status: PRECONDITION_FAILED
+        details:
+          errorId: 31
+          message: User info couldn't be updated because user does not exists.
+          traceableErrorId: '7851921y-2254f-4c58-b3a0-e0a6e1231f23'

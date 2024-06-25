@@ -1,0 +1,12 @@
+name: orderDirection
+in: query
+required: false
+description: |
+  Order direction of the listed resources:
+  * `asc` - Ascending order.
+  * `desc` - Descending order.
+schema:
+  type: string
+  enum: [ asc, desc ]
+  default: desc
+  example: 'asc'

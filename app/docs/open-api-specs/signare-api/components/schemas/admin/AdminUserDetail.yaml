@@ -1,0 +1,40 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaDetail'
+  spec:
+    type: object
+    x-required: mandatory
+    additionalProperties: false
+    properties:
+      roles:
+        type: array
+        x-required: mandatory
+        items:
+          type: string
+          description: |
+            List of roles assigned to the administrator user
+          example: ['SignerAdministrator']
+      description:
+        type: string
+        x-required: mandatory
+        description: |
+          Description of the resource.
+    required:
+      - roles
+      - description
+
+example:
+  meta:
+    id: 'admin-user-1'
+    resourceVersion: '7e032829-249d-4498-aa3e-344a16cd6a93'
+    creationDate: '1581675232372'
+    lastUpdate: '1581675232372'
+  spec:
+    roles: ['SignerAdministrator']
+    description: 'my admin user'
+
+required:
+  - meta
+  - spec

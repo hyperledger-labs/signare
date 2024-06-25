@@ -1,0 +1,27 @@
+<mapping id="io.adhara.persistencefw.itest.additional">
+    <statement id="insertUser">
+        INSERT INTO te_user (
+            project,
+            id,
+            description,
+            balance,
+            address,
+            address_type,
+            creation_date,
+            last_update,
+            state,
+            state_reason
+        ) VALUES (
+            :project,
+            :id,
+            :description,
+            :balance,
+            :address,
+            :address_type,
+            :creation_date,
+            :last_update,
+            :state,
+            :state_reason
+        )
+    </statement>
+</mapping>

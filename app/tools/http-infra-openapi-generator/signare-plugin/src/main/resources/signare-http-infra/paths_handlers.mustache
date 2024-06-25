@@ -1,0 +1,340 @@
+{{>common_header}}
+package {{packageName}}
+
+import (
+"context"
+"encoding/json"
+"fmt"
+"errors"
+"net/http"
+"strings"
+
+
+"github.com/hyperledger-labs/signare/app/pkg/infra/requestcontext"
+"github.com/hyperledger-labs/signare/app/pkg/infra/httpinfra"
+
+"github.com/hyperledger-labs/signare/app/pkg/commons/logger"
+
+"github.com/gorilla/mux"
+)
+
+// {{classname}}HttpHandler functionality to handle {{classname}} HTTP requests
+type {{classname}}HttpHandler interface {
+    {{#operations}}{{#operation}}{{^vendorExtensions.signare-skip-code-generation}}
+        // HandleHttp{{operationId}} handles an {{operationId}} request
+        HandleHttp{{operationId}}(responseWriter http.ResponseWriter, request *http.Request)
+    {{/vendorExtensions.signare-skip-code-generation}}{{#vendorExtensions.signare-skip-code-generation}}
+        // Code not generated for HandleHttp{{operationId}} as it does not return an object
+    {{/vendorExtensions.signare-skip-code-generation}}{{/operation}}{{/operations}}
+}
+
+type {{classname}}Adapter interface {
+    {{#operations}}{{#operation}}
+        Adapt{{operationId}}(ctx context.Context, data {{operationId}}Request)(*{{operationId}}ResponseWrapper, *httpinfra.HTTPError)
+    {{/operation}}{{/operations}}
+}
+
+var _ {{classname}}HttpHandler = (*Default{{classname}}HttpHandler)(nil)
+
+// Default{{classname}}HttpHandler implementation of {{classname}}HttpHandler
+type Default{{classname}}HttpHandler struct {
+    adapter {{classname}}Adapter
+    responseHandler httpinfra.HttpResponseHandler
+}
+
+// Default{{classname}}HttpHandlerOptions options to create a Default{{classname}}HttpHandler
+type Default{{classname}}HttpHandlerOptions struct {
+    Adapter {{classname}}Adapter
+    ResponseHandler httpinfra.HttpResponseHandler
+}
+
+// NewDefault{{classname}}HttpHandler returns a new Default{{classname}}HttpHandler
+func NewDefault{{classname}}HttpHandler(options Default{{classname}}HttpHandlerOptions) (*Default{{classname}}HttpHandler,error) {
+    if options.Adapter == nil {
+        return nil, errors.New("adapter field is mandatory")
+    }
+    if options.ResponseHandler == nil {
+        return nil, errors.New("responseHandler field is mandatory")
+    }
+
+    return &Default{{classname}}HttpHandler {
+        adapter: options.Adapter,
+        responseHandler: options.ResponseHandler,
+    }, nil
+
+}
+
+{{#operations}}{{#operation}}{{^vendorExtensions.signare-skip-code-generation}}
+    // {{operationId}}SupportedParams {{operationId}} supported parameters
+    type {{operationId}}SupportedParams struct {
+        params map[string]bool
+    }
+
+    // New{{operationId}}SupportedParams returns a new {{operationId}}SupportedParams
+    func New{{operationId}}SupportedParams() {{operationId}}SupportedParams {
+        params := make(map[string]bool)
+        {{#allParams}}
+        params["{{baseName}}"] = true
+        {{/allParams}}
+        return {{operationId}}SupportedParams{
+            params: params,
+        }
+    }
+
+    func (sp *{{operationId}}SupportedParams) check(r *http.Request) *httpinfra.HTTPError {
+        unsupportedParams := make([]string, 0)
+        queryParams := r.URL.Query()
+        for param := range queryParams {
+            if !sp.params[param] {
+                unsupportedParams = append(unsupportedParams, param)
+            }
+        }
+        if len(unsupportedParams) > 0 {
+            httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+            httpError.SetMessage(fmt.Sprintf("Unsupported parameters in request [%s]", strings.Join(unsupportedParams, ",")))
+            return httpError
+        }
+        return nil
+    }
+    {{#hasEnums}}
+    // {{operationId}}EnumValue definition of {{operationId}} enum values
+    type {{operationId}}EnumValue struct {
+            enumValues map[string][]string //map param-supported enum values
+        }
+
+        // New{{operationId}}EnumValue returns a new {{operationId}}EnumValue
+        func New{{operationId}}EnumValue() {{operationId}}EnumValue {
+            enumValues := make(map[string][]string)
+            {{#allParams}}
+            {{#isEnum}}
+            enumValues["{{baseName}}"] = make([]string,0)
+            {{#_enum}}
+            enumValues["{{baseName}}"] = append(enumValues["{{baseName}}"], "{{.}}")
+            {{/_enum}}
+            {{/isEnum}}
+            {{/allParams}}
+            return {{operationId}}EnumValue{
+                enumValues: enumValues,
+            }
+        }
+
+        func (ev *{{operationId}}EnumValue) check(r *http.Request) *httpinfra.HTTPError {
+            queryParams := r.URL.Query()
+
+            for param, expected := range ev.enumValues {
+                if value := queryParams.Get(param); len(value) > 0 {
+                    if !contains(expected, value){
+                        httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                        httpError.SetMessage(fmt.Sprintf("Unsupported value in enum, received: [%s=%s], expected one of these: [%s]", param, value, strings.Join(expected, "|")))
+                        return httpError
+                   }
+                }
+            }
+            return nil
+        }
+    {{/hasEnums}}
+
+    // HandleHttp{{operationId}} handles {{operationId}} request
+    func (handler Default{{classname}}HttpHandler) HandleHttp{{operationId}}(w http.ResponseWriter, r *http.Request) {
+        ctx := r.Context()
+        {{#hasPathParams}}
+            params := mux.Vars(r)
+        {{/hasPathParams}}
+        {{#hasQueryParams}}
+            query := r.URL.Query()
+        {{/hasQueryParams}}
+
+        // Parameters supported check
+        supportedParams := New{{operationId}}SupportedParams()
+        supportedParamsErr := supportedParams.check(r)
+        if supportedParamsErr != nil {
+            handler.responseHandler.HandleErrorResponse(ctx, w, supportedParamsErr)
+            return
+        }
+
+        {{#hasEnums}}
+        // Check enum values in request
+        enumValue := New{{operationId}}EnumValue()
+        enumValueErr := enumValue.check(r)
+        if enumValueErr != nil {
+            handler.responseHandler.HandleErrorResponse(ctx, w, enumValueErr)
+            return
+        }
+        {{/hasEnums}}
+        {{#allParams}}
+            // Data retrieval
+            {{#isPathParam}}
+                {{paramName}}RawValue := params["{{baseName}}"]
+            {{/isPathParam}}
+            {{#isQueryParam}}
+                {{#isArray}}
+                    {{paramName}}RawValue := query["{{baseName}}"]
+                    {{#required}}
+                        if len({{paramName}}RawValue) < 1 {
+                            {{paramName}}HTTPError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                            {{paramName}}HTTPError.SetMessage(fmt.Sprintf("Required query parameter [{{paramName}}] is not in given URL [%s]", r.URL))
+                            handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}HTTPError)
+                            return
+                        }
+                    {{/required}}
+                {{/isArray}}
+                {{^isArray}}
+                        {{paramName}}RawValue := query.Get("{{baseName}}")
+                        {{#required}}
+                            {{paramName}}IsPresent := query.Has("{{baseName}}")
+                            if !{{paramName}}IsPresent {
+                                {{paramName}}HTTPError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                                {{paramName}}HTTPError.SetMessage(fmt.Sprintf(fmt.Sprintf("Required query parameter [{{paramName}}] is not in given URL [%s]", r.URL))
+                                handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}HTTPError)
+                                return
+                            }
+                        {{/required}}
+                        {{^required}}
+                            {{#isInteger}}
+                                {{paramName}}IsPresent := query.Has("{{baseName}}")
+                            {{/isInteger}}
+                            {{#isLong}}
+                                {{paramName}}IsPresent := query.Has("{{baseName}}")
+                            {{/isLong}}
+                        {{/required}}
+                {{/isArray}}
+            {{/isQueryParam}}
+            {{#isHeaderParam}}
+                {{paramName}}RawValue := r.Header.Get("{{baseName}}")
+            {{/isHeaderParam}}
+            // Conversions
+            {{#isInteger}}
+                {{#isQueryParam}}
+                    var {{paramName}}Value *int32
+                    if {{paramName}}IsPresent {
+                        {{paramName}}ToInt, {{paramName}}ConversionErr := toInt32({{paramName}}RawValue, "{{paramName}}")
+                        if {{paramName}}ConversionErr  != nil {
+                            handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}ConversionErr)
+                            return
+                        }
+                        {{paramName}}Value = new(int32)
+                        *{{paramName}}Value = {{paramName}}ToInt
+                    }
+                {{/isQueryParam}}
+                {{^isQueryParam}}
+                    {{paramName}}Value,{{paramName}}ConversionErr := toInt32({{paramName}}RawValue, "{{paramName}}")
+                        if {{paramName}}ConversionErr  != nil {
+                        handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}ConversionErr)
+                        return
+                    }
+                {{/isQueryParam}}
+            {{/isInteger}}
+            {{#isLong}}
+                {{#isQueryParam}}
+                    var {{paramName}}Value *int64
+                    if {{paramName}}IsPresent {
+                        {{paramName}}ToInt, {{paramName}}ConversionErr := toInt64({{paramName}}RawValue, "{{paramName}}")
+                        if {{paramName}}ConversionErr  != nil {
+                            handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}ConversionErr)
+                            return
+                        }
+                        {{paramName}}Value = new(int64)
+                        *{{paramName}}Value = {{paramName}}ToInt
+                    }
+                {{/isQueryParam}}
+                {{^isQueryParam}}
+                    {{paramName}}Value,{{paramName}}ConversionErr := toInt64({{paramName}}RawValue, "{{paramName}}")
+                    if {{paramName}}ConversionErr  != nil {
+                        handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}ConversionErr)
+                        return
+                    }
+                {{/isQueryParam}}
+            {{/isLong}}
+            {{#isBoolean}}
+                {{paramName}}ValuePtr,{{paramName}}ConversionErr := toBool({{paramName}}RawValue, "{{paramName}}")
+                if {{paramName}}ConversionErr  != nil {
+                    handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}ConversionErr)
+                    return
+                }
+                var {{paramName}}Value bool
+                if {{paramName}}ValuePtr == nil{
+                {{#isRequired}}
+                    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                    httpError.SetMessage(fmt.Sprintf("Required query parameter [{{paramName}}] is not in given URL [%s]", r.URL))
+                    handler.responseHandler.HandleErrorResponse(ctx, w, httpError)
+                    return
+                {{/isRequired}}
+                {{^isRequired}}
+                    {{^isNullable}}
+                    {{paramName}}Value = {{defaultValue}}
+                    {{/isNullable}}
+                {{/isRequired}}
+                } else {
+                    {{paramName}}Value = *{{paramName}}ValuePtr
+                }
+
+            {{/isBoolean}}
+            {{#isString}}
+                {{#vendorExtensions.signare-is-type}}
+                  {{paramName}}Value, {{paramName}}BuilderErr := {{vendorExtensions.signare-custom.fromStrBuilderFunc}}({{paramName}}RawValue)
+                  if {{paramName}}BuilderErr != nil {
+                      handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}BuilderErr)
+                      return
+                  }
+                {{/vendorExtensions.signare-is-type}}
+
+                {{^vendorExtensions.signare-is-type}}
+                    {{paramName}}Value := {{paramName}}RawValue
+                {{/vendorExtensions.signare-is-type}}
+            {{/isString}}
+            {{#isArray}}
+                {{paramName}}Value := {{paramName}}RawValue
+            {{/isArray}}
+            {{#isBodyParam}}
+                // Request body processing
+                {{paramName}}Value := {{dataType}}{}
+                errDecoder := json.NewDecoder(r.Body).Decode(&{{paramName}}Value);
+                if errDecoder != nil {
+                    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                    httpError.SetMessage(fmt.Sprintf("an error occurred when parsing the JSON request data [%s]: [%s]", r.Body, errDecoder.Error()))
+                    handler.responseHandler.HandleErrorResponse(ctx,w, httpError)
+                    return
+                }
+                {{paramName}}ValidationResult, {{paramName}}ValidationErr := {{paramName}}Value.ValidateWith()
+
+                if {{paramName}}ValidationErr != nil {
+                    handler.responseHandler.HandleErrorResponse(ctx, w, {{paramName}}ValidationErr)
+                    return
+                }
+
+                if !{{paramName}}ValidationResult.Valid {
+               		httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                    httpError.SetMessage(fmt.Sprintf("an error occurred when validating the JSON request data [%s]: [%s]", r.Body, {{paramName}}ValidationResult.NotValidReason))
+                    handler.responseHandler.HandleErrorResponse(ctx, w, httpError)
+                    return
+                }
+
+                {{paramName}}Value.SetDefaults()
+            {{/isBodyParam}}
+        {{/allParams}}
+        reqData := {{operationId}}Request{}
+        {{#allParams}}
+            reqData.{{#vendorExtensions.x-export-param-name}}{{{.}}}{{/vendorExtensions.x-export-param-name}} = {{paramName}}Value
+        {{/allParams}}
+
+        response, adaptError := handler.adapter.Adapt{{operationId}}(ctx , reqData)
+        if adaptError != nil {
+            handler.responseHandler.HandleErrorResponse(ctx, w, adaptError)
+            return
+        }
+
+        responseValidationResult, responseValidationErr := response.{{#vendorExtensions.signare-response-type}}{{.}}{{/vendorExtensions.signare-response-type}}.ValidateWith()
+
+        if responseValidationErr != nil || !responseValidationResult.Valid {
+            logger.LogEntry(ctx).Errorf("error validating response [%+v]", response)
+            httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+            httpError.SetMessage("the response was not successfully validated")
+            handler.responseHandler.HandleErrorResponse(ctx, w, httpError)
+            return
+        }
+
+        handler.responseHandler.HandleSuccessResponse(ctx, w, response.ResponseInfo, response.{{#vendorExtensions.signare-response-type}}{{.}}{{/vendorExtensions.signare-response-type}})
+    }
+{{/vendorExtensions.signare-skip-code-generation}}{{#vendorExtensions.signare-skip-code-generation}}
+    // Code not generated for HandleHttp{{operationId}} as it does not return an object
+{{/vendorExtensions.signare-skip-code-generation}}{{/operation}}{{/operations}}

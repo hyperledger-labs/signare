@@ -1,0 +1,12 @@
+name: orderBy
+required: false
+in: query
+description: |
+  Resources ordered by one of these fields:
+  * `creationDate` - Date when the resource was created.
+  * `lastUpdate` - Date when the resource was last updated.
+schema:
+  type: string
+  enum: [ creationDate, lastUpdate ]
+  default: creationDate
+  example: 'lastUpdate'

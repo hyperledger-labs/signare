@@ -1,0 +1,43 @@
+type: object
+x-required: mandatory
+nullable: false
+description: |
+  Metainformation of the resource
+properties:
+  id:
+    type: string
+    maxLength: 64
+    x-required: mandatory
+    nullable: false
+    description: |
+      The unique identifier of the resource. It must be aligned with the value in the endpoint path.
+  resourceVersion:
+    type: string
+    x-required: mandatory
+    nullable: false
+    description: |
+      An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection,
+      and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources.
+      Populated by the system. Read-only. Value must be treated as opaque by clients
+    example: '7e032829-249d-4498-aa3e-344a16cd6a93'
+  creationDate:
+    type: string
+    x-required: mandatory
+    nullable: false
+    description: |
+      Instant when the resource was registered in the signare. Read only
+      Unix time in milliseconds UTC.
+    example: '1581675232372'
+  lastUpdate:
+    type: string
+    x-required: mandatory
+    nullable: false
+    description: |
+      Last instant when the resource was updated. Read only
+      Unix time in milliseconds UTC.
+    example: '1581675232372'
+required:
+  - id
+  - resourceVersion
+  - creationDate
+  - lastUpdate

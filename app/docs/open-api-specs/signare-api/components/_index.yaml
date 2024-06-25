@@ -1,0 +1,113 @@
+schemas:
+## Admin Schemas
+  ModuleSpec:
+    $ref: ./schemas/admin/ModuleSpec.yaml
+  ModuleCreation:
+    $ref: ./schemas/admin/ModuleCreation.yaml
+  SoftHSM:
+    $ref: ./schemas/admin/SoftHSM.yaml
+  ModuleDetail:
+    $ref: ./schemas/admin/ModuleDetail.yaml
+  ModuleUpdate:
+    $ref: ./schemas/admin/ModuleUpdate.yaml
+  ModuleCollection:
+    $ref: ./schemas/admin/ModuleCollection.yaml
+  SlotCreation:
+    $ref: ./schemas/admin/SlotCreation.yaml
+  SlotDetail:
+    $ref: ./schemas/admin/SlotDetail.yaml
+  SlotCollection:
+    $ref: ./schemas/admin/SlotCollection.yaml
+  SlotUpdatePin:
+    $ref: ./schemas/admin/SlotUpdatePin.yaml
+  AdminUserDetail:
+    $ref: ./schemas/admin/AdminUserDetail.yaml
+  AdminUserCreation:
+    $ref: ./schemas/admin/AdminUserCreation.yaml
+  AdminUserUpdate:
+    $ref: ./schemas/admin/AdminUserUpdate.yaml
+  AdminUserCollection:
+    $ref: ./schemas/admin/AdminUserCollection.yaml
+  ApplicationDetail:
+    $ref: ./schemas/admin/ApplicationDetail.yaml
+  ApplicationUpdate:
+    $ref: ./schemas/admin/ApplicationUpdate.yaml
+  ApplicationCreation:
+    $ref: ./schemas/admin/ApplicationCreation.yaml
+  ApplicationCollection:
+    $ref: ./schemas/admin/ApplicationCollection.yaml
+
+## Application Schemas
+  UserCreation:
+    $ref: ./schemas/application/UserCreation.yaml
+  UserDetail:
+    $ref: ./schemas/application/UserDetail.yaml
+  UserUpdate:
+    $ref: ./schemas/application/UserUpdate.yaml
+  UserCollection:
+    $ref: ./schemas/application/UserCollection.yaml
+  AccountCreation:
+    $ref: ./schemas/application/AccountCreation.yaml
+
+## Common Schemas
+  CollectionPage:
+    $ref: ./schemas/common/CollectionPage.yaml
+  BaseError:
+    $ref: ./schemas/common/BaseError.yaml
+  ResourceMetaDetail:
+    $ref: ./schemas/common/ResourceMetaDetail.yaml
+  ResourceMetaCreation:
+    $ref: ./schemas/common/ResourceMetaCreation.yaml
+  ResourceMetaUpdate:
+    $ref: ./schemas/common/ResourceMetaUpdate.yaml
+
+responses:
+  BadRequestResponse:
+    $ref: ./responses/BadRequestResponse.yaml
+  BadGatewayResponse:
+    $ref: ./responses/BadGatewayResponse.yaml
+  FailedPreconditionResponse:
+    $ref: ./responses/FailedPreconditionResponse.yaml
+  InternalServerErrorResponse:
+    $ref: ./responses/InternalServerErrorResponse.yaml
+  NotFoundResponse:
+    $ref: ./responses/NotFoundResponse.yaml
+  NotImplementedResponse:
+    $ref: ./responses/NotImplementedResponse.yaml
+  PermissionDeniedResponse:
+    $ref: ./responses/PermissionDeniedResponse.yaml
+  TimeoutResponse:
+    $ref: ./responses/TimeoutResponse.yaml
+  TooManyRequestResponse:
+    $ref: ./responses/TooManyRequestResponse.yaml
+  UnauthenticatedResponse:
+    $ref: ./responses/UnauthenticatedResponse.yaml
+  UnavailableResponse:
+    $ref: ./responses/UnavailableResponse.yaml
+
+parameters:
+## Path Params
+  ApplicationId:
+    $ref: ./parameters/path/ApplicationId.yaml
+  ModuleId:
+    $ref: ./parameters/path/ModuleId.yaml
+  SlotId:
+    $ref: ./parameters/path/SlotId.yaml
+  AdminUserId:
+    $ref: ./parameters/path/AdminUserId.yaml
+  UserId:
+    $ref: ./parameters/path/UserId.yaml
+  AccountId:
+    $ref: ./parameters/path/AccountId.yaml
+
+## Query Params
+  ApplicationIdQuery:
+    $ref: ./parameters/query/ApplicationId.yaml
+  Limit:
+    $ref: ./parameters/query/Limit.yaml
+  Offset:
+    $ref: ./parameters/query/Offset.yaml
+  OrderBy:
+    $ref: ./parameters/query/OrderBy.yaml
+  OrderDirection:
+    $ref: ./parameters/query/OrderDirection.yaml

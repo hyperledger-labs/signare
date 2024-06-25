@@ -1,0 +1,8 @@
+name: limit
+required: false
+in: query
+description: The numbers of items to return
+schema:
+  type: integer
+  default: 30
+  example: 5

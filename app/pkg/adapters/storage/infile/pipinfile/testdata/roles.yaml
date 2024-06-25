@@ -1,0 +1,10 @@
+roles:
+  - id: test-admin
+    description: Has access to generated and manual actions
+    permissions:
+      - allow-generated-actions
+      - allow-manual-actions
+  - id: test-user
+    description: Has access to manual actions
+    permissions:
+      - allow-manual-actions

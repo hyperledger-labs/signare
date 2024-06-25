@@ -1,0 +1,13 @@
+description: Resource was not found.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 502
+        status: BAD_GATEWAY
+        details:
+          errorId: 33
+          message: The RPC call did not succeed
+          traceableErrorId: '2699538f-00d9-4c58-b3a0-e0a6e1231f24'

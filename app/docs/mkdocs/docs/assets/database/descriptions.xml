@@ -1,0 +1,14 @@
+<schemaMeta xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schemaspy.org/xsd/6/schemameta.xsd" >
+    <comments>Database comment</comments>
+    <tables>
+        <table name="cfg_admin" comments="stores signare admins" >
+            <column name="id" comments='Identifier of the resource.' />
+            <column name="internal_resource_id" comments='Internal identifier of the resource. Used for referential integrity.' />
+            <column name="roles" comments='Admin roles.' />
+            <column name="description" comments='Description of the resource.' />
+            <column name="creation_date" comments='Timestamp representing when the resource was created.' />
+            <column name="last_update" comments='Timestamp representing when the resource was last updated.' />
+            <column name="resource_version" comments='Unique identifier of the resource version. Used for optimistic locking.' />
+        </table>
+    </tables>
+</schemaMeta>

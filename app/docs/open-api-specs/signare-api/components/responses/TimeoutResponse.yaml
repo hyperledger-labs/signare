@@ -1,0 +1,13 @@
+description: Upstream request deadline exceeded.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 504
+        status: TIMEOUT
+        details:
+          errorId: 22
+          message: Upstream request deadline exceeded.
+          traceableErrorId: '94585153g-782d4-4c58-c3ds0-e0a6e2771f23'

@@ -1,0 +1,1 @@
+!!swagger ../../index_bundled_openapi.yaml!!

@@ -1,0 +1,4 @@
+migration_steps:
+  - up: /include/dbschemas/postgres/000001_initial_schema.up.sql
+    down: /include/dbschemas/postgres/000001_initial_schema.down.sql
+    version_description: "000001 initial schema"

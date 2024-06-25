@@ -1,0 +1,265 @@
+{{>common_header}}
+package {{packageName}}
+
+{{#models}}{{#model}}
+{{! Check if it is a oneOf and use the oneOf template }}
+{{#oneOf}}{{#-first}}{{>components_types_model_oneof}}{{/-first}}{{/oneOf}}
+{{^oneOf}}
+{{! If it is not a oneOf use the default template }}
+
+
+import(
+	"fmt"
+
+    "github.com/hyperledger-labs/signare/app/pkg/infra/httpinfra"
+)
+
+        {{#isEnum}}{{#description}}// {{{classname}}} : {{{description}}}{{/description}}
+type {{{classname}}} {{^format}}{{dataType}}{{/format}}{{#format}}{{{format}}}{{/format}}
+
+// List of {{{classname}}}
+const (
+{{#allowableValues}}
+    {{#enumVars}}
+        {{#enumClassPrefix}}{{{classname.toUpperCase}}}_{{/enumClassPrefix}}{{name}} {{{classname}}} = {{{value}}}
+    {{/enumVars}}
+{{/allowableValues}}
+){{/isEnum}}
+
+
+{{^isEnum}}
+{{#description}}
+// {{classname}} - {{{description}}}{{/description}}
+type {{classname}} struct {
+    {{#vars}}
+        {{#description}}
+        // {{{description}}}
+        {{/description}}
+        {{^isNullable}}
+            {{^required}}
+                {{name}} httpinfra.Optional[{{{dataType}}}] `json:"{{baseName}},omitempty"{{#vendorExtensions.x-go-custom-tag}} {{{.}}}{{/vendorExtensions.x-go-custom-tag}}`
+            {{/required}}
+            {{#required}}
+                {{name}} *{{{dataType}}} `json:"{{baseName}}"{{#vendorExtensions.x-go-custom-tag}} {{{.}}}{{/vendorExtensions.x-go-custom-tag}}`
+            {{/required}}
+        {{/isNullable}}
+        {{#isNullable}}
+            {{name}} *{{{dataType}}} `json:"{{baseName}}{{^required}},omitempty{{/required}}"{{#vendorExtensions.x-go-custom-tag}} {{{.}}}{{/vendorExtensions.x-go-custom-tag}}`
+        {{/isNullable}}
+    {{/vars}}
+}
+
+// ValidateWith check whether {{classname}} is valid
+func (data {{classname}}) ValidateWith() (*httpinfra.ValidationResult, *httpinfra.HTTPError) {
+    {{#vars}}
+        {{^isNullable}}
+            {{#required}}
+                if data.{{name}} == nil {
+                    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                    httpError.SetMessage("error validating field [{{baseName}}]")
+                    return nil, httpError
+                }
+            {{/required}}
+            {{^required}}
+                if data.{{name}}.GetValue() == nil && !data.{{name}}.IsEmpty() {
+                    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                    httpError.SetMessage("error validating field [{{baseName}}]")
+                    return nil, httpError
+                }
+                if data.{{name}}.GetValue() != nil {
+            {{/required}}
+        {{/isNullable}}
+        {{#isNullable}}
+            {{#required}}
+            {{/required}}
+            if data.{{name}} != nil {
+               {{#maxLength}}
+                   if len(*data.{{name}}) > {{maxLength}} {
+                       httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                       httpError.SetMessage("field [{{baseName}}] exceeds max length of {{maxLength}}")
+                       return nil, httpError
+                   }
+               {{/maxLength}}
+        {{/isNullable}}
+        {{#isArray}}
+            {{^isNullable}}
+                {{^required}}
+                    for _, item := range *data.{{name}}.GetValue() {
+                {{/required}}
+                {{#required}}
+                    for _, item := range *data.{{name}} {
+                {{/required}}
+            {{/isNullable}}
+            {{#isNullable}}
+                for _, item := range *data.{{name}} {
+            {{/isNullable}}
+            {{#items}}
+                {{! We just always do something with the variable, because if there is no needed check the compiler will complain because item is never used}}
+                item = item
+                {{#isModel}}
+                    itemValidated, err := item.ValidateWith()
+                    if err != nil {
+                        httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                        httpError.SetMessage("error validating field [{{baseName}}]")
+                        return nil, httpError
+                    }
+                    if !itemValidated.Valid {
+                        return itemValidated, nil
+                    }
+                {{/isModel}}
+                {{#isString}}
+                    {{#dataFormat}}
+                        {{^isNullable}}
+                            {{#required}}
+                                if item == nil {
+                                    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                                    httpError.SetMessage("error validating field [{{baseName}}]")
+                                    return nil, httpError
+                                }
+                            {{/required}}
+                            {{^required}}
+                                if item.GetValue() == nil && !item.IsEmpty() {
+                                     httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                                     httpError.SetMessage("error validating field [{{baseName}}]")
+                                     return nil, httpError
+                                }
+                            {{/required}}
+                        {{/isNullable}}
+                    {{/dataFormat}}
+                    {{^dataFormat}}
+                        {{^isNullable}}
+                            {{#required}}
+                                if data.{{name}} == nil {
+                                     httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                                     httpError.SetMessage("error validating field [{{baseName}}]")
+                                     return nil, httpError
+                                }
+                            {{/required}}
+                        {{/isNullable}}
+                    {{/dataFormat}}
+                {{/isString}}
+                {{#isInteger}}
+                    {{^isNullable}}
+                        {{#required}}
+                            if data.{{name}} == nil {
+                                 httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                                 httpError.SetMessage("error validating field [{{baseName}}]")
+                                 return nil, httpError
+                            }
+                        {{/required}}
+                    {{/isNullable}}
+                {{/isInteger}}
+                {{#isBoolean}}
+                    {{^isNullable}}
+                        {{#required}}
+                            if data.{{name}} == nil {
+                                 httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                                 httpError.SetMessage("error validating field [{{baseName}}]")
+                                 return nil, httpError
+                            }
+                        {{/required}}
+                    {{/isNullable}}
+                {{/isBoolean}}
+                }
+            {{/items}}
+        {{/isArray}}
+        {{#isModel}}
+            {{^isNullable}}
+                {{^required}}
+                    var validated{{name}} *httpinfra.ValidationResult
+                    var err{{name}} error
+                    if data.{{name}}.GetValue() != nil {
+                        validated{{name}}, err{{name}} = data.{{name}}.GetValue().ValidateWith()
+                    }
+                {{/required}}
+                {{#required}}
+                    validated{{name}}, err{{name}} := data.{{name}}.ValidateWith()
+                {{/required}}
+            {{/isNullable}}
+            {{#isNullable}}
+                validated{{name}}, err{{name}} := data.{{name}}.ValidateWith()
+            {{/isNullable}}
+            if err{{name}} != nil {
+                 httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                 httpError.SetMessage("error validating field [{{baseName}}]")
+                 return nil, httpError
+            }
+            if validated{{name}} != nil && !validated{{name}}.Valid {
+                return validated{{name}}, nil
+            }
+        {{/isModel}}
+        {{^isNullable}}
+            {{^required}}
+                }
+            {{/required}}
+        {{/isNullable}}
+        {{#isNullable}}
+            }
+        {{/isNullable}}
+    {{/vars}}
+    return &httpinfra.ValidationResult{
+        Valid: true,
+    }, nil
+}
+
+// SetDefaults sets default values as defined in the API spec
+func (data *{{classname}}) SetDefaults() {
+    {{#vars}}
+        {{#isModel}}
+            {{^required}}
+                {{^isNullable}}
+                    if data.{{name}}.GetValue() == nil {
+                        data.{{name}}.SetValue(&{{{dataType}}}{})
+                    }
+                    data.{{name}}.GetValue().SetDefaults()
+                {{/isNullable}}
+                {{#isNullable}}
+                    if data.{{name}} != nil {
+                        data.{{name}}.SetDefaults()
+                    }
+                {{/isNullable}}
+            {{/required}}
+            {{#required}}
+                data.{{name}}.SetDefaults()
+            {{/required}}
+        {{/isModel}}
+        {{^isModel}}
+            {{#defaultValue}}
+                {{^isNullable}}
+                    {{^required}}
+                        if data.{{name}}.GetValue() == nil {
+                            var valueToSet {{{dataType}}}
+                        {{#isString}}
+                            valueToSet = "{{{defaultValue}}}"
+                            data.{{name}}.SetValue(&valueToSet)
+                        {{/isString}}
+                        {{^isString}}
+                            valueToSet = {{{defaultValue}}}
+                            data.{{name}}.SetValue(&valueToSet)
+                        {{/isString}}
+                        }
+                    {{/required}}
+                {{/isNullable}}
+                {{#isNullable}}
+                    {{^required}}
+                        if data.{{name}} == nil {
+                            var valueToSet *{{{dataType}}}
+                        {{#isString}}
+                            *valueToSet = "{{{defaultValue}}}"
+                            *data.{{name}} = valueToSet
+                        {{/isString}}
+                        {{^isString}}
+                            *valueToSet = {{{defaultValue}}}
+                            *data.{{name}} = {{{defaultValue}}}
+                        {{/isString}}
+                        }
+                    {{/required}}
+                {{/isNullable}}
+            {{/defaultValue}}
+        {{/isModel}}
+    {{/vars}}
+}
+
+{{/isEnum}}
+{{/oneOf}}
+{{/model}}{{/models}}

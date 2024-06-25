@@ -1,0 +1,84 @@
+<mapping id="io.adhara.persistencefw.itest">
+    <statement id="insertUser">
+        INSERT INTO te_user (
+            project,
+            id,
+            description,
+            balance,
+            address,
+            address_type,
+            creation_date,
+            last_update,
+            state,
+            state_reason
+        ) VALUES (
+            :project,
+            :id,
+            :description,
+            :balance,
+            :address,
+            :address_type,
+            :creation_date,
+            :last_update,
+            :state,
+            :state_reason
+        )
+    </statement>
+    <statement id="listUser">
+        SELECT
+            project,
+            id,
+            description,
+            balance,
+            address,
+            address_type,
+            creation_date,
+            last_update,
+            state,
+            state_reason
+        FROM
+            te_user
+        WHERE
+            project=:project
+    </statement>
+    <statement id="getUserById">
+        SELECT
+            project,
+            id,
+            description,
+            balance,
+            address,
+            address_type,
+            creation_date,
+            last_update,
+            state,
+            state_reason
+        FROM
+            te_user
+        WHERE
+            project=:project
+            AND id=:id
+    </statement>
+    <statement id="updateUser">
+        UPDATE
+            te_user
+        SET
+            description=:description,
+            balance=:balance,
+            address=:address,
+            address_type=:address_type,
+            last_update=:last_update,
+            state=:state,
+            state_reason=:state_reason
+        WHERE
+            project=:project
+            AND id=:id
+    </statement>
+    <statement id="deleteUser">
+        DELETE FROM
+            te_user
+        WHERE
+            project=:project
+            AND id=:id
+    </statement>
+</mapping>

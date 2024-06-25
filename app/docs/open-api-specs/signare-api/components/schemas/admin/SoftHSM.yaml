@@ -1,0 +1,14 @@
+type: object
+additionalProperties: false
+properties:
+  hsmKind:
+    type: string
+    enum:
+      - softHSM
+    x-required: mandatory
+    nullable: false
+    description:
+      The kind of HSM
+required:
+  - hsmKind
+

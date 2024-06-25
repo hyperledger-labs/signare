@@ -1,0 +1,13 @@
+description: Internal server error. Contact with Support or Admin with traceableErrorId for diagnose
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 500
+        status: INTERNAL
+        details:
+          errorId: -1
+          message: Sorry you are experiencing an unexpected error. Please try again and if the problem persists contact Support Team
+          traceableErrorId: '2699538f-00d9-4c58-b3a0-e0a6e1231f23'

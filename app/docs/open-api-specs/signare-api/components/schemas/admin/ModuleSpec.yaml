@@ -1,0 +1,24 @@
+type: object
+x-required: mandatory
+additionalProperties: false
+properties:
+  configuration:
+    discriminator:
+      propertyName: hsmKind
+      mapping:
+        softHSM: '#/components/schemas/SoftHSM'
+    oneOf:
+      - $ref: '../../_index.yaml#/schemas/SoftHSM'
+    x-required: optional
+    nullable: true
+    additionalProperties: false
+    required:
+      - hsmKind
+  description:
+    type: string
+    x-required: mandatory
+    description: |
+      Description of the resource.
+required:
+  - configuration
+  - description

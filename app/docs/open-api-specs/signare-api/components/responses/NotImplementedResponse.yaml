@@ -1,0 +1,13 @@
+description: API method not implemented by the server.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 501
+        status: NOT_IMPLEMENTED
+        details:
+          errorId: 39
+          message: API method not implemented by the server.
+          traceableErrorId: '9060122k-2254f-4c58-b3a0-e0a6e1231f23'

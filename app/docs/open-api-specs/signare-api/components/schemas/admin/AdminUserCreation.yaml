@@ -1,0 +1,24 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaCreation'
+  spec:
+    type: object
+    x-required: optional
+    nullable: true
+    additionalProperties: false
+    properties:
+      description:
+        type: string
+        x-required: optional
+        nullable: true
+        maxLength: 256
+        description: |
+          Description of the resource.
+
+example:
+  meta:
+    id: 'admin-user-1'
+  spec:
+    description: "my admin user"

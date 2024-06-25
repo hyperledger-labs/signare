@@ -1,0 +1,67 @@
+<mapping id="signare.account">
+    <statement id="insert">
+        INSERT INTO cfg_account (
+            address,
+            application_id,
+            user_id,
+            internal_resource_id,
+            creation_date,
+            last_update
+        ) VALUES (
+            :address,
+            :application_id,
+            :user_id,
+            :internal_resource_id,
+            :creation_date,
+            :last_update
+        )
+    </statement>
+    <statement id="list">
+        SELECT
+            address,
+            application_id,
+            user_id,
+            internal_resource_id,
+            creation_date,
+            last_update
+        FROM
+            cfg_account
+        WHERE
+            application_id=:application_id
+        {{ if .FilterGroup }}
+            {{ range $counter, $filter := .FilterGroup.Filters }}
+                AND {{$filter.ToSQLStmt}}
+            {{end}}
+        {{ end }}
+    </statement>
+    <statement id="getById">
+        SELECT
+            address,
+            application_id,
+            user_id,
+            internal_resource_id,
+            creation_date,
+            last_update
+        FROM
+            cfg_account
+        WHERE
+            application_id=:application_id AND
+            user_id=:user_id AND
+            address=:address
+    </statement>
+    <statement id="delete">
+        DELETE FROM
+            cfg_account
+        WHERE
+            application_id=:application_id AND
+            user_id=:user_id AND
+            address=:address
+    </statement>
+    <statement id="deleteAllForAddress">
+        DELETE FROM
+            cfg_account
+        WHERE
+            application_id=:application_id AND
+            address=:address
+    </statement>
+</mapping>

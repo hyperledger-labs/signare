@@ -1,0 +1,27 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaUpdate'
+  spec:
+    type: object
+    x-required: optional
+    nullable: true
+    additionalProperties: false
+    properties:
+      description:
+        type: string
+        x-required: optional
+        nullable: true
+        maxLength: 256
+        description: |
+          Description of the resource.
+
+example:
+  meta:
+    resourceVersion: '7e032829-249d-4498-aa3e-344a16cd6a93'
+  spec:
+    description: 'my admin user'
+
+required:
+  - meta

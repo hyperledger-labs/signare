@@ -1,0 +1,27 @@
+delete:
+  operationId: application.accounts.remove
+  tags:
+    - Application
+  summary: Deletes an account
+  description: Removes the specified account from the accounts assigned to the specified user
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ApplicationId'
+    - $ref: '../../components/_index.yaml#/parameters/UserId'
+    - $ref: '../../components/_index.yaml#/parameters/AccountId'
+  responses:
+    '200':
+      description: The user detail to whom the account was removed
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/UserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '412':
+      $ref: '../../components/_index.yaml#/responses/FailedPreconditionResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

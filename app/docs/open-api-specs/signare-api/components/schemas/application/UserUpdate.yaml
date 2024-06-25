@@ -1,0 +1,40 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaUpdate'
+  spec:
+    type: object
+    x-required: optional
+    nullable: true
+    additionalProperties: false
+    properties:
+      roles:
+        type: array
+        x-required: mandatory
+        nullable: false
+        items:
+          type: string
+          description: |
+            List of roles assigned to the user
+          example: ['TransactionSigner']
+      description:
+        type: string
+        x-required: optional
+        nullable: true
+        maxLength: 256
+        description: |
+          Description of the resource.
+    required:
+      - roles
+
+example:
+  meta:
+    resourceVersion: '7e032829-249d-4498-aa3e-344a16cd6a93'
+  spec:
+    roles: ['TransactionSigner']
+    description: 'my user'
+
+required:
+  - meta
+  - spec
