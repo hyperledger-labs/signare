@@ -3,9 +3,8 @@
 <div align="center">
 <a href="https://github.com/hyperledger-labs/signare/pulls"><img src="https://img.shields.io/github/issues-pr/hyperledger-labs/signare" alt="Pull Requests Badge"/></a>
 <a href="https://github.com/hyperledger-labs/signare/issues"><img src="https://img.shields.io/github/issues/hyperledger-labs/signare" alt="Issues Badge"/></a>
-<a href="https://github.com/hyperledger-labs/signare/LICENSE"><img src="https://img.shields.io/github/license/hyperledger-labs/signare?color=2b9348" alt="License Badge"/></a>
+<a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License Badge"/></a>
 </div>
-
 
 Signare, a Hyperledger Lab, is an enterprise grade digital signing solution for DLT related applications and Ethereum clients. The application provides a REST API server to manage resource configuration and an ETH-JSON-RPC 2.0 server that provides functionality for generating, removing, listing and signing Ethereum transactions.
 
@@ -80,7 +79,7 @@ Contributions are always welcome! Please check our [Contribution guidelines](app
 
 ## :pencil: License
 
-This project is licensed under the [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) license.
+This project is licensed under the [Apache License 2.0](LICENSE) license. 
 
 ## Initial Committers
 
