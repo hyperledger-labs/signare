@@ -1,0 +1,30 @@
+post:
+  operationId: application.accounts.create
+  tags:
+    - Application
+  summary: Creates an account
+  description: Creates a new account that will be assigned to the specified user
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ApplicationId'
+    - $ref: '../../components/_index.yaml#/parameters/UserId'
+  requestBody:
+    description: Account to create
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/_index.yaml#/schemas/AccountCreation'
+  responses:
+    '201':
+      description: The user detail to whom the account was added
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/UserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '412':
+      $ref: '../../components/_index.yaml#/responses/FailedPreconditionResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

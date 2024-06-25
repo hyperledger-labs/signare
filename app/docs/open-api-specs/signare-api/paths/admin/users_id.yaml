@@ -1,0 +1,79 @@
+get:
+  operationId: admin.users.describe
+  tags:
+    - Admin
+  summary: Gets a signer administrator
+  description: Describes the specified signer administrator user
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/AdminUserId'
+  responses:
+    '200':
+      description: Administrator user details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/AdminUserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+put:
+  operationId: admin.users.edit
+  tags:
+    - Admin
+  summary: Updates a signer administrator
+  description: Updates the specified signer administrator user
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/AdminUserId'
+  requestBody:
+    description: Information to update the signer administrator user. Missing or empty fields will delete that information
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/_index.yaml#/schemas/AdminUserUpdate'
+  responses:
+    '200':
+      description: Administrator user details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/AdminUserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+delete:
+  operationId: admin.users.remove
+  tags:
+    - Admin
+  summary: Deletes a signer administrator
+  description: Deletes the specified signer administrator user
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/AdminUserId'
+  responses:
+    '200':
+      description: Deleted administrator user
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/AdminUserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '412':
+      $ref: '../../components/_index.yaml#/responses/FailedPreconditionResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

@@ -1,0 +1,84 @@
+<mapping id="signare.application">
+    <statement id="insert">
+        INSERT INTO cfg_application (
+            id,
+            internal_resource_id,
+            chain_id,
+            description,
+            creation_date,
+            last_update,
+            resource_version
+        ) VALUES (
+            :id,
+            :internal_resource_id,
+            :chain_id,
+            :description,
+            :creation_date,
+            :last_update,
+            :resource_version
+        )
+    </statement>
+    <statement id="list">
+        SELECT
+            id,
+            internal_resource_id,
+            chain_id,
+            description,
+            creation_date,
+            last_update,
+            resource_version
+        FROM
+            cfg_application
+        {{ if .FilterGroup }}
+            WHERE
+            {{ range $counter, $filter := .FilterGroup.Filters }}
+                {{ if lt $counter 1}}
+                    {{$filter.ToSQLStmt}}
+                {{ else }}
+                    AND {{$filter.ToSQLStmt}}
+                {{ end }}
+            {{end}}
+        {{ end }}
+        {{ if .Order }}
+            ORDER BY {{ .Order.By }} {{ if eq .Order.Direction "asc" }}ASC{{ else }}DESC{{end}}
+            {{ if .Pagination}}
+                LIMIT {{.Pagination.Limit}} OFFSET {{.Pagination.Offset}}
+            {{ end }}
+        {{ end }}
+    </statement>
+    <statement id="getById">
+        SELECT
+            id,
+            internal_resource_id,
+            chain_id,
+            description,
+            creation_date,
+            last_update,
+            resource_version
+        FROM
+            cfg_application
+        WHERE
+            id=:id
+    </statement>
+    <statement id="update">
+        UPDATE
+            cfg_application
+        SET
+            chain_id=:chain_id,
+            description=:description,
+            last_update=:last_update,
+            resource_version=:new_resource_version
+        WHERE
+            id=:id AND
+            resource_version=:resource_version
+    </statement>
+    <statement id="delete">
+        DELETE FROM
+            cfg_application
+        WHERE
+            id=:id
+    </statement>
+    <statement id="exists">
+        SELECT 1 AS exists_result where EXISTS(SELECT 1 FROM cfg_application WHERE id=:id)
+    </statement>
+</mapping>

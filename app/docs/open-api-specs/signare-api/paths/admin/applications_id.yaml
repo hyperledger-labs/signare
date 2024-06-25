@@ -1,0 +1,79 @@
+get:
+  operationId: admin.applications.describe
+  tags:
+    - Admin
+  summary: Gets an application
+  description: Describes the specified application
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ApplicationId'
+  responses:
+    '200':
+      description: Application details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/ApplicationDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+put:
+  operationId: admin.applications.edit
+  tags:
+    - Admin
+  summary: Updates an application
+  description: Updates the specified application
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ApplicationId'
+  requestBody:
+    description: Information to update the application. Missing or empty fields will delete that information
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/_index.yaml#/schemas/ApplicationUpdate'
+  responses:
+    '200':
+      description: Application details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/ApplicationDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+delete:
+  operationId: admin.applications.remove
+  tags:
+    - Admin
+  summary: Deletes an application
+  description: Deletes the specified application
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ApplicationId'
+  responses:
+    '200':
+      description: Deleted application
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/ApplicationDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '412':
+      $ref: '../../components/_index.yaml#/responses/FailedPreconditionResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

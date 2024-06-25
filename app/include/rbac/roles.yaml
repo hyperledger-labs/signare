@@ -1,0 +1,13 @@
+roles:
+  - id: signer-admin
+    description: Administrator of the signare
+    permissions:
+      - allow-admin-actions
+  - id: application-admin
+    description: Admin of an application
+    permissions:
+      - allow-application-admin-actions
+  - id: transaction-signer
+    description: User of a given application with  signing permissions
+    permissions:
+      - allow-user-transaction-sign-actions

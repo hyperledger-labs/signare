@@ -1,0 +1,50 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaDetail'
+  spec:
+    type: object
+    x-required: mandatory
+    additionalProperties: false
+    properties:
+      roles:
+        type: array
+        x-required: mandatory
+        items:
+          type: string
+          description: |
+            List of roles assigned to the user
+          example: ['ApplicationAdministrator', 'TransactionSigner']
+      accounts:
+        type: array
+        x-required: mandatory
+        items:
+          type: string
+          description: |
+            List of ethereum accounts assigned to the user
+          example: ['0xc0ffee254729296a45a3885639AC7E10F9d54979', '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E']
+      description:
+        type: string
+        x-required: mandatory
+        description: |
+          Description of the resource.
+    required:
+      - roles
+      - accounts
+      - description
+
+example:
+  meta:
+    id: 'user-1'
+    resourceVersion: '7e032829-249d-4498-aa3e-344a16cd6a93'
+    creationDate: '1581675232372'
+    lastUpdate: '1581675232372'
+  spec:
+    roles: ['ApplicationAdministrator', 'TransactionSigner']
+    accounts: ['0xc0ffee254729296a45a3885639AC7E10F9d54979', '0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E']
+    description: "my user"
+
+required:
+  - meta
+  - spec

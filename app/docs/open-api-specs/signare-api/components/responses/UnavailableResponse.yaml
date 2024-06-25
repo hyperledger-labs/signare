@@ -1,0 +1,13 @@
+description: Service unavailable. Typically the server is down.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 503
+        status: UNAVAILABLE
+        details:
+          errorId: 78
+          message: Service unavailable. Typically the server is down.
+          traceableErrorId: '9023153g-782d4-4c58-b3a0-e0a6e1231f23'

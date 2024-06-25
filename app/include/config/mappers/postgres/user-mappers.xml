@@ -1,0 +1,88 @@
+<mapping id="signare.user">
+    <statement id="insert">
+        INSERT INTO cfg_user (
+            id,
+            application_id,
+            internal_resource_id,
+            roles,
+            description,
+            creation_date,
+            last_update,
+            resource_version
+        ) VALUES (
+            :id,
+            :application_id,
+            :internal_resource_id,
+            :roles,
+            :description,
+            :creation_date,
+            :last_update,
+            :resource_version
+        )
+    </statement>
+    <statement id="list">
+        SELECT
+            id,
+            application_id,
+            internal_resource_id,
+            roles,
+            description,
+            creation_date,
+            last_update,
+            resource_version
+        FROM
+            cfg_user
+        WHERE
+            application_id=:application_id
+        {{ if .FilterGroup }}
+            {{ range $counter, $filter := .FilterGroup.Filters }}
+                AND {{$filter.ToSQLStmt}}
+            {{end}}
+        {{ end }}
+        {{ if .Order }}
+            ORDER BY {{ .Order.By }} {{ if eq .Order.Direction "asc" }}ASC{{ else }}DESC{{end}}
+            {{ if .Pagination}}
+                LIMIT {{.Pagination.Limit}} OFFSET {{.Pagination.Offset}}
+            {{ end }}
+        {{ end }}
+    </statement>
+    <statement id="getById">
+        SELECT
+            id,
+            application_id,
+            internal_resource_id,
+            roles,
+            description,
+            creation_date,
+            last_update,
+            resource_version
+        FROM
+            cfg_user
+        WHERE
+            application_id=:application_id AND
+            id=:id
+    </statement>
+    <statement id="update">
+        UPDATE
+            cfg_user
+        SET
+            roles=:roles,
+            description=:description,
+            resource_version=:new_resource_version,
+            last_update=:last_update
+        WHERE
+            application_id=:application_id AND
+            id=:id AND
+            resource_version=:resource_version
+    </statement>
+    <statement id="delete">
+        DELETE FROM
+            cfg_user
+        WHERE
+            application_id=:application_id AND
+            id=:id
+    </statement>
+    <statement id="exists">
+        SELECT 1 AS exists_result where EXISTS(SELECT 1 FROM cfg_user WHERE id=:id AND application_id=:application_id)
+    </statement>
+</mapping>

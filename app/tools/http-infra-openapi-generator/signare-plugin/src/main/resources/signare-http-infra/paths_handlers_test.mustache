@@ -1,0 +1,303 @@
+{{>common_header}}
+package {{packageName}}_test
+
+import (
+	"bytes"
+	"context"
+	"errors"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	generatedHttpInfra "github.com/hyperledger-labs/signare/app/pkg/infra/generated/httpinfra"
+
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/require"
+)
+
+{{#operations}}{{#operation}}{{^vendorExtensions.signare-skip-code-generation}}
+// Test_HandleHttp{{operationId}} tests HandleHttp{{operationId}}
+func Test_HandleHttp{{operationId}}(t *testing.T) {
+    testData := []struct {
+        TestName           string
+        ErrorNewHandler    error
+        Options            generatedHttpInfra.Default{{classname}}HttpHandlerOptions
+        Path               string
+        Body               string
+        ExpectedStatusCode int
+        ResponseBodyPrefix string
+    }{
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Success",
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{
+                     Adapt{{operationId}}Response: &generatedHttpInfra.{{operationId}}ResponseWrapper{
+                         {{returnType}}: generatedHttpInfra.{{returnType}}{},
+                         ResponseInfo: httpinfra.ResponseInfo{
+                             ResponseType: httpinfra.ResponseTypeOk,
+                         },
+                     },
+                     Adapt{{operationId}}Error: nil,
+                 },
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeSuccess: http.StatusOK,
+            }},
+            Path:               "{{path}}",
+            Body:               "{}",
+            ExpectedStatusCode: http.StatusOK,
+            ResponseBodyPrefix: "",
+        },
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_NewHandlerNilAdapter",
+            ErrorNewHandler: errors.New("adapter field is mandatory"),
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: nil,
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeSuccess: http.StatusOK,
+            }},
+        },
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_NewHandlerNilFormatChecker",
+            ErrorNewHandler: errors.New("formatChecker field is mandatory"),
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{
+                     Adapt{{operationId}}Response: &generatedHttpInfra.{{operationId}}ResponseWrapper{
+                         {{returnType}}: generatedHttpInfra.{{returnType}}{},
+                         ResponseInfo: httpinfra.ResponseInfo{
+                             ResponseType: httpinfra.ResponseTypeOk,
+                         },
+                     },
+                     Adapt{{operationId}}Error: nil,
+                 },
+                 FormatChecker: nil,
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeSuccess: http.StatusOK,
+            }},
+        },
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_NewHandlerNilResponseHandler",
+            ErrorNewHandler: errors.New("responseHandler field is mandatory"),
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{
+                     Adapt{{operationId}}Response: &generatedHttpInfra.{{operationId}}ResponseWrapper{
+                         {{returnType}}: generatedHttpInfra.{{returnType}}{},
+                         ResponseInfo: httpinfra.ResponseInfo{
+                             ResponseType: httpinfra.ResponseTypeOk,
+                         },
+                     },
+                     Adapt{{operationId}}Error: nil,
+                 },
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: nil,
+            },
+        },
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_UnsupportedParam",
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{},
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeError: http.StatusBadRequest,
+            }},
+            Path:               "{{path}}?unsupportedParamTest=1",
+            Body:               "{}",
+            ExpectedStatusCode: http.StatusBadRequest,
+            ResponseBodyPrefix: "Unsupported parameters in request",
+        },
+    {{#hasBodyParam}}
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_InvalidJsonBody",
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{},
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeError: http.StatusBadRequest,
+            }},
+            Path:               "{{path}}",
+            Body:               "invalidJson",
+            ExpectedStatusCode: http.StatusBadRequest,
+            ResponseBodyPrefix: "Invalid JSON in request",
+        },
+    {{/hasBodyParam}}
+    {{#vendorExtensions.hasRequestValidation}}
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_RequestValidationError",
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{},
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument),
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeError: http.StatusBadRequest,
+            }},
+            Path:               "{{path}}",
+            Body:               "{}",
+            ExpectedStatusCode: http.StatusBadRequest,
+            ResponseBodyPrefix: "Invalid argument during test",
+        },
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_RequestValidationInvalid",
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{},
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   false,
+                         IPv4Valid:       false,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeError: http.StatusBadRequest,
+            }},
+            Path:               "{{path}}",
+            Body:               "{}",
+            ExpectedStatusCode: http.StatusBadRequest,
+            ResponseBodyPrefix: "Invalid JSON in request",
+        },
+    {{/vendorExtensions.hasRequestValidation}}
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_AdapterError",
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{
+                     Adapt{{operationId}}Response: &generatedHttpInfra.{{operationId}}ResponseWrapper{},
+                     Adapt{{operationId}}Error: errors.New("invalid argument during adapter test"),
+                 },
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeError: http.StatusBadRequest,
+            }},
+            Path:               "{{path}}",
+            Body:               "{}",
+            ExpectedStatusCode: http.StatusOK,
+            ResponseBodyPrefix: "Invalid argument during adapter test",
+        },
+        /*
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_ResponseValidationError",
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{},
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeError: http.StatusOK,
+            }},
+            Path:               "{{path}}",
+            Body:               "{}",
+            ExpectedStatusCode: http.StatusBadRequest,
+            ResponseBodyPrefix: "",
+        },
+        {
+            TestName: "Test_HandleHttp{{operationId}}_Failure_ResponseValidationInvalid",
+            Options: generatedHttpInfra.Default{{classname}}HttpHandlerOptions{
+                 Adapter: test{{classname}}Adapter{},
+                 FormatChecker: testHttpInputDataFormatChecker{
+                     DataRequestValidation: httpInputDataFormatCheckerParameters{
+                         FreeTextValid:   true,
+                         IPv4Valid:       true,
+                         ValidationError: nil,
+                     },
+                 },
+                 ResponseHandler: testResponseHandler{
+                     StatusCodeError: http.StatusOK,
+            }},
+            Path:               "{{path}}",
+            Body:               "{}",
+            ExpectedStatusCode: http.StatusBadRequest,
+            ResponseBodyPrefix: "",
+        },
+        */
+    }
+
+    for testDataCounter := range testData {
+        currentTest := testData[testDataCounter]
+        t.Run(currentTest.TestName, func(t *testing.T) {
+            handler, err := generatedHttpInfra.NewDefault{{classname}}HttpHandler(currentTest.Options)
+            if currentTest.ErrorNewHandler != nil {
+                require.NotNil(t, err)
+                require.True(t, errors.As(err, &httpinfra.HTTPError{}))
+                return
+            }
+            require.Nil(t, err)
+            require.NotNil(t, handler)
+
+            req := httptest.NewRequest(http.Method{{httpMethod}}, currentTest.Path, bytes.NewBuffer([]byte(currentTest.Body)))
+            w := httptest.NewRecorder()
+
+            r := mux.NewRouter()
+            r.HandleFunc("{{path}}", handler.HandleHttp{{operationId}})
+            r.ServeHTTP(w, req)
+
+            responseBody, errBody := io.ReadAll(w.Result().Body)
+            require.Nil(t, errBody)
+            responseBodyString := string(responseBody)
+            require.True(t, strings.HasPrefix(responseBodyString, currentTest.ResponseBodyPrefix))
+        })
+    }
+}
+{{/vendorExtensions.signare-skip-code-generation}}{{/operation}}{{/operations}}
+
+// test{{classname}}Adapter allows to set what we want the adapter to return, so that it can be reused on both happy and unhappy paths
+type test{{classname}}Adapter struct {
+    {{#operations}}{{#operation}}{{^vendorExtensions.signare-skip-code-generation}}
+    Adapt{{operationId}}Response *generatedHttpInfra.{{operationId}}ResponseWrapper
+    Adapt{{operationId}}Error error
+    {{/vendorExtensions.signare-skip-code-generation}}{{/operation}}{{/operations}}
+}
+
+var _ generatedHttpInfra.{{classname}}Adapter = (*test{{classname}}Adapter)(nil)
+
+{{#operations}}{{#operation}}{{^vendorExtensions.signare-skip-code-generation}}
+// Adapt{{operationId}} adapts {{operationId}}
+func (a test{{classname}}Adapter) Adapt{{operationId}}(ctx context.Context, data generatedHttpInfra.{{operationId}}Request)(*generatedHttpInfra.{{operationId}}ResponseWrapper, error) {
+    return a.Adapt{{operationId}}Response, a.Adapt{{operationId}}Error
+}
+{{/vendorExtensions.signare-skip-code-generation}}{{/operation}}{{/operations}}

@@ -1,0 +1,76 @@
+<mapping id="signare.referentialIntegrityEntry">
+    <statement id="insert">
+        INSERT INTO system_referential_integrity_entry (
+            id,
+            resource_id,
+            resource_kind,
+            parent_resource_id,
+            parent_resource_kind,
+            creation_date,
+            last_update
+        ) VALUES (
+            :id,
+            :resource_id,
+            :resource_kind,
+            :parent_resource_id,
+            :parent_resource_kind,
+            :creation_date,
+            :last_update
+        )
+    </statement>
+    <statement id="list">
+        SELECT
+            id,
+            resource_id,
+            resource_kind,
+            parent_resource_id,
+            parent_resource_kind,
+            creation_date,
+            last_update
+        FROM
+            system_referential_integrity_entry
+        {{ if .FilterGroup }}
+            WHERE
+            {{ range $counter, $filter := .FilterGroup.Filters }}
+                {{ if lt $counter 1}}
+                    {{$filter.ToSQLStmt}}
+                {{ else }}
+                    AND {{$filter.ToSQLStmt}}
+                {{ end }}
+            {{end}}
+        {{ end }}
+        {{ if .Order }}
+            ORDER BY {{ .Order.By }} {{ if eq .Order.Direction "asc" }}ASC{{ else }}DESC{{end}}
+            {{ if .Pagination}}
+                LIMIT {{.Pagination.Limit}} OFFSET {{.Pagination.Offset}}
+            {{ end }}
+        {{ end }}
+    </statement>
+    <statement id="getById">
+        SELECT
+            id,
+            resource_id,
+            resource_kind,
+            parent_resource_id,
+            parent_resource_kind,
+            creation_date,
+            last_update
+        FROM
+            system_referential_integrity_entry
+        WHERE
+            id=:id
+    </statement>
+    <statement id="delete">
+        DELETE FROM
+            system_referential_integrity_entry
+        WHERE
+            id=:id
+    </statement>
+    <statement id="deleteAllFromResource">
+        DELETE FROM
+            system_referential_integrity_entry
+        WHERE
+            resource_id=:resource_id AND
+            resource_kind=:resource_kind
+    </statement>
+</mapping>

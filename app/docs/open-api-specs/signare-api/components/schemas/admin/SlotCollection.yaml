@@ -1,0 +1,12 @@
+allOf:
+  - type: object
+    properties:
+      items:
+        type: array
+        x-required: mandatory
+        description: collection of slots for a given Hardware Security Module.
+        items:
+          $ref: '../../_index.yaml#/schemas/SlotDetail'
+    required:
+      - items
+  - $ref: '../../_index.yaml#/schemas/CollectionPage'

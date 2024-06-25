@@ -1,0 +1,7 @@
+name: adminUserId
+in: path
+description: Admin user identifier
+required: true
+schema:
+  type: string
+example: admin-1

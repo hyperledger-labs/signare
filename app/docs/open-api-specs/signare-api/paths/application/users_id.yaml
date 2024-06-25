@@ -1,0 +1,82 @@
+get:
+  operationId: application.users.describe
+  tags:
+    - Application
+  summary: Gets a user
+  description: Describes the specified user
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ApplicationId'
+    - $ref: '../../components/_index.yaml#/parameters/UserId'
+  responses:
+    '200':
+      description: User details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/UserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+put:
+  operationId: application.users.edit
+  tags:
+    - Application
+  summary: Updates a user
+  description: Updates the specified user
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ApplicationId'
+    - $ref: '../../components/_index.yaml#/parameters/UserId'
+  requestBody:
+    description: Information to update the user. Missing or empty fields will delete that information
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/_index.yaml#/schemas/UserUpdate'
+  responses:
+    '200':
+      description: User details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/UserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+delete:
+  operationId: application.users.remove
+  tags:
+    - Application
+  summary: Deletes a user
+  description: Deletes the specified user
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ApplicationId'
+    - $ref: '../../components/_index.yaml#/parameters/UserId'
+  responses:
+    '200':
+      description: Deleted user
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/UserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '412':
+      $ref: '../../components/_index.yaml#/responses/FailedPreconditionResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

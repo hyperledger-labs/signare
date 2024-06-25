@@ -1,0 +1,29 @@
+## Admin
+'/admin/modules':
+  $ref: admin/modules.yaml
+'/admin/modules/{moduleId}':
+  $ref: admin/modules_id.yaml
+'/admin/modules/{moduleId}/slots':
+  $ref: admin/slots.yaml
+'/admin/modules/{moduleId}/slots/{slotId}':
+  $ref: admin/slots_id.yaml
+'/admin/modules/{moduleId}/slots/{slotId}:update-pin':
+  $ref: admin/slots_id_update_pin.yaml
+'/admin/users':
+  $ref: admin/users.yaml
+'/admin/users/{adminUserId}':
+  $ref: admin/users_id.yaml
+'/applications':
+  $ref: admin/applications.yaml
+'/applications/{applicationId}':
+  $ref: admin/applications_id.yaml
+
+## Application
+'/applications/{applicationId}/users':
+  $ref: application/users.yaml
+'/applications/{applicationId}/users/{userId}':
+  $ref: application/users_id.yaml
+'/applications/{applicationId}/users/{userId}/accounts':
+  $ref: application/accounts.yaml
+'/applications/{applicationId}/users/{userId}/accounts/{accountId}':
+  $ref: application/accounts_id.yaml

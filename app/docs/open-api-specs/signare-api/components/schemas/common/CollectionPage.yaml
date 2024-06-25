@@ -1,0 +1,23 @@
+type: object
+additionalProperties: false
+description: Page data of the query
+properties:
+  limit:
+    type: integer
+    x-required: mandatory
+    description: The size of the collection's page
+    example: 100
+  offset:
+    type: integer
+    x-required: mandatory
+    description: The entry of the table on which the collection starts
+    example: 0
+  moreItems:
+    type: boolean
+    x-required: mandatory
+    description: True if there are more pages to collect from the database
+    example: true
+required:
+  - limit
+  - offset
+  - moreItems

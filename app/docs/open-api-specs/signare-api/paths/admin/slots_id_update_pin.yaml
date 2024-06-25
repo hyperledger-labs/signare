@@ -1,0 +1,30 @@
+post:
+  operationId: admin.slots.updatePin
+  tags:
+    - Admin
+  summary: Updates the PIN of the slot
+  description: Update the slot's PIN of a given Hardware Security Module (HSM)
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ModuleId'
+    - $ref: '../../components/_index.yaml#/parameters/SlotId'
+  requestBody:
+    description: The new PIN of the slot
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/_index.yaml#/schemas/SlotUpdatePin'
+  responses:
+    '200':
+      description: Slot details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/SlotDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

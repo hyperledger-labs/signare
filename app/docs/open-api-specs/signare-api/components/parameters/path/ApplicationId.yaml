@@ -1,0 +1,7 @@
+name: applicationId
+in: path
+description: Application identifier
+required: true
+schema:
+  type: string
+example: application-1

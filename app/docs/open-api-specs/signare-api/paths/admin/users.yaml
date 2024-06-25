@@ -1,0 +1,52 @@
+post:
+  operationId: admin.users.create
+  tags:
+    - Admin
+  summary: Creates a signer administrator
+  description: Creates a new signer administrator user
+  requestBody:
+    description: Administrator user to create
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/_index.yaml#/schemas/AdminUserCreation'
+  responses:
+    '201':
+      description: Created administrator user
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/AdminUserDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '429':
+      $ref: '../../components/_index.yaml#/responses/TooManyRequestResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+get:
+  operationId: admin.users.list
+  tags:
+    - Admin
+  summary: Lists signer administrators
+  description: Lists all the signer administrator users
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/Limit'
+    - $ref: '../../components/_index.yaml#/parameters/Offset'
+    - $ref: '../../components/_index.yaml#/parameters/OrderBy'
+    - $ref: '../../components/_index.yaml#/parameters/OrderDirection'
+  responses:
+    '200':
+      description: Collection of administrator users
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/AdminUserCollection'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

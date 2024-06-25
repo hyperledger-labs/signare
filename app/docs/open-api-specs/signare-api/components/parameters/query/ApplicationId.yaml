@@ -1,0 +1,7 @@
+name: applicationId
+required: false
+in: query
+description: Application identifier of the resource/s
+schema:
+  type: string
+example: application-1

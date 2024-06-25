@@ -1,0 +1,23 @@
+description: Resource was not found.
+content:
+  application/json:
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        output:
+          type: object
+          x-required: mandatory
+          nullable: false
+          additionalProperties: false
+          properties:
+            referenceId:
+              type: string
+              x-required: mandatory
+              nullable: false
+              description: |
+                Unique, it will be automatically generated if not provided.
+          required:
+            - referenceId
+      required:
+        - output

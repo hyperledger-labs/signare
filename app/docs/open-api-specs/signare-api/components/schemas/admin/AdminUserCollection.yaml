@@ -1,0 +1,12 @@
+allOf:
+  - type: object
+    properties:
+      items:
+        type: array
+        x-required: mandatory
+        description: collection of signer administrator users.
+        items:
+          $ref: '../../_index.yaml#/schemas/AdminUserDetail'
+    required:
+      - items
+  - $ref: '../../_index.yaml#/schemas/CollectionPage'

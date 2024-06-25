@@ -1,0 +1,225 @@
+import(
+{{#models}}
+    {{#model}}
+        {{#vendorExtensions.signare-components-types-imports}}
+            "{{.}}"
+        {{/vendorExtensions.signare-components-types-imports}}
+    {{/model}}
+{{/models}}
+
+"bytes"
+"encoding/json"
+"errors"
+
+"github.com/hyperledger-labs/signare/app/pkg/infra/httpinfra"
+)
+
+{{#useOneOfDiscriminatorLookup}}
+    {{#discriminator}}
+        type {{classname}}{{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}} string
+
+        const (
+        {{#mappedModels}}
+            {{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}}{{#lambda.titlecase}}{{#lambda.signareCamelCase}}{{{mappingName}}}{{/lambda.signareCamelCase}}{{/lambda.titlecase}} {{classname}}{{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}} = "{{{mappingName}}}"
+        {{/mappedModels}}
+        )
+    {{/discriminator}}
+{{/useOneOfDiscriminatorLookup}}
+
+// {{classname}} - {{{description}}}{{^description}}struct for {{{classname}}}{{/description}}
+type {{classname}} struct {
+{{#useOneOfDiscriminatorLookup}}
+    {{#discriminator}}
+        {{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}} {{classname}}{{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}} `json:"{{#lambda.signareCamelCase}}{{{propertyBaseName}}}{{/lambda.signareCamelCase}}"`
+    {{/discriminator}}
+{{/useOneOfDiscriminatorLookup}}
+{{#oneOf}}
+    {{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}} *{{{.}}} `json:"{{#lambda.signareCamelCase}}{{{.}}}{{/lambda.signareCamelCase}},omitempty"`
+{{/oneOf}}
+}
+
+{{#useOneOfDiscriminatorLookup}}
+    {{#discriminator}}
+        {{#mappedModels}}
+            // AsOneOf return as one of
+            func (oneOf *{{modelName}}) AsOneOf{{classname}}() {{classname}} {
+            return {{classname}}{
+            {{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}}: {{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}}{{#lambda.titlecase}}{{#lambda.signareCamelCase}}{{{mappingName}}}{{/lambda.signareCamelCase}}{{/lambda.titlecase}},
+            {{#lambda.titlecase}}{{modelName}}{{/lambda.titlecase}}: oneOf,
+            }
+            }
+        {{/mappedModels}}
+    {{/discriminator}}
+{{/useOneOfDiscriminatorLookup}}
+
+// UnmarshalJSON data into one of the pointers in the struct
+func (dst *{{classname}}) UnmarshalJSON(data []byte) *httpinfra.HTTPError {
+var err error
+{{#isNullable}}
+    // this object is nullable so check if the payload is null or empty string
+    if string(data) == "" || string(data) == "{}" {
+    return nil
+    }
+
+{{/isNullable}}
+{{#useOneOfDiscriminatorLookup}}
+    {{#discriminator}}
+        {{#mappedModels}}
+            {{#-first}}
+                // use discriminator value to speed up the lookup
+                var jsonDict map[string]interface{}
+                strictDecoder := json.NewDecoder(bytes.NewBuffer(data))
+                strictDecoder.DisallowUnknownFields()
+                err = strictDecoder.Decode(&jsonDict)
+                if err != nil {
+                    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                    httpError.SetMessage("error unmarshalling JSON into map for the discriminator lookup")
+                    return httpError
+                }
+
+            {{/-first}}
+            // check if the discriminator value is '{{{mappingName}}}'
+            if jsonDict["{{{propertyBaseName}}}"] == string({{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}}{{#lambda.titlecase}}{{#lambda.signareCamelCase}}{{{mappingName}}}{{/lambda.signareCamelCase}}{{/lambda.titlecase}}) {
+            dst.{{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}} = {{#lambda.titlecase}}{{{propertyBaseName}}}{{/lambda.titlecase}}{{#lambda.titlecase}}{{#lambda.signareCamelCase}}{{{mappingName}}}{{/lambda.signareCamelCase}}{{/lambda.titlecase}}
+            // try to unmarshal JSON data into {{{modelName}}}
+            err = json.Unmarshal(data, &dst.{{{modelName}}})
+            if err == nil {
+                return nil // data stored in dst.{{{modelName}}}, return on the first match
+            } else {
+            dst.{{{modelName}}} = nil
+                httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+                httpError.SetMessage("error unmarshalling {{classname}} as {{{modelName}}}")
+                return httpError
+            }
+            }
+
+        {{/mappedModels}}
+        return nil
+    {{/discriminator}}
+    {{^discriminator}}
+        match := 0
+        {{#oneOf}}
+            // try to unmarshal data into {{{.}}}
+            err = json.Unmarshal(data, &dst.{{{.}}})
+            if err == nil {
+            json{{{.}}}, _ := json.Marshal(dst.{{{.}}})
+            if string(json{{{.}}}) == "{}" { // empty struct
+            dst.{{{.}}} = nil
+            } else {
+            match++
+            }
+            } else {
+            dst.{{{.}}} = nil
+            }
+
+        {{/oneOf}}
+        if match > 1 { // more than 1 match
+        // reset to nil
+        {{#oneOf}}
+            dst.{{{.}}} = nil
+        {{/oneOf}}
+        httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+        httpError.SetMessage("data matches more than one schema in oneOf({{classname}})")
+        return httpError
+
+        } else if match == 1 {
+        return nil // exactly one match
+        } else { // no match
+        httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+        httpError.SetMessage("data failed to match schemas in oneOf({{classname}})")
+        return httpError
+        }
+    {{/discriminator}}
+{{/useOneOfDiscriminatorLookup}}
+{{^useOneOfDiscriminatorLookup}}
+    match := 0
+    {{#oneOf}}
+        // try to unmarshal data into {{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}}
+        err = newStrictDecoder(data).Decode(&dst.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}})
+        if err == nil {
+        json{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}}, _ := json.Marshal(dst.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}})
+        if string(json{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}}) == "{}" { // empty struct
+        dst.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}} = nil
+        } else {
+        match++
+        }
+        } else {
+        dst.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}} = nil
+        }
+
+    {{/oneOf}}
+    if match > 1 { // more than 1 match
+    // reset to nil
+    {{#oneOf}}
+        dst.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}} = nil
+    {{/oneOf}}
+    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+    httpError.SetMessage("data matches more than one schema in oneOf({{classname}})")
+    return httpError
+    } else if match == 1 {
+    return nil // exactly one match
+    } else { // no match
+    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+    httpError.SetMessage("data failed to match schemas in oneOf({{classname}})")
+    return httpError
+    }
+{{/useOneOfDiscriminatorLookup}}
+}
+
+// MarshalJSON data from the first non-nil pointers in the struct to JSON
+func (src {{classname}}) MarshalJSON() ([]byte, error) {
+{{#oneOf}}
+    if src.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}} != nil {
+    return json.Marshal(&src.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}})
+    }
+
+{{/oneOf}}
+return nil, nil // no data in oneOf schemas
+}
+
+// GetActualInstance return the actual instance of {{classname}}
+func (obj *{{classname}}) GetActualInstance() (interface{}) {
+    if obj == nil {
+        return nil
+    }
+
+{{#oneOf}}
+    if obj.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}} != nil {
+    return obj.{{#lambda.titlecase}}{{{.}}}{{/lambda.titlecase}}
+    }
+
+{{/oneOf}}
+// all schemas are nil
+return nil
+}
+
+func (data *{{classname}}) ValidateWith() (*httpinfra.ValidationResult, error) {
+{{#oneOf}}
+    if data.{{.}} != nil {
+    validated{{.}}, validateWithFailure := data.{{.}}.ValidateWith()
+    if validateWithFailure != nil {
+    httpError := httpinfra.NewHTTPError(httpinfra.StatusInvalidArgument)
+    httpError.SetMessage(fmt.Sprintf("error validating field [%v]",data.{{.}}))
+    return nil, httpError
+    }
+    if !validated{{.}}.Valid {
+    return validated{{.}}, nil
+    }
+    }
+{{/oneOf}}
+
+return &httpinfra.ValidationResult{
+Valid: true,
+}, nil
+}
+
+
+func (data *{{classname}}) SetDefaults() {
+    instance := data.GetActualInstance()
+
+    {{#oneOf}}
+        if i, ok := instance.(*{{{.}}}); ok {
+            i.SetDefaults()
+        }
+    {{/oneOf}}
+}

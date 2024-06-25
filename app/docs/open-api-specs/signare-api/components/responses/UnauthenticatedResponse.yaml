@@ -1,0 +1,13 @@
+description: Request not authenticated due to missing, invalid, or expired OAuth token.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 401
+        status: UNAUTHENTICATED
+        details:
+          errorId: 29
+          message: Request not authenticated.
+          traceableErrorId: '673286g-782d4-4c58-b3a0-e0a6e1231f23'

@@ -1,0 +1,59 @@
+{{>common_header}}
+package {{packageName}}
+
+import (
+
+    "net/http"
+
+    "github.com/hyperledger-labs/signare/app/pkg/infra/httpinfra"
+)
+
+// {{classname}}PublisherOptions options to create a {{classname}}RoutesPublished
+type {{classname}}PublisherOptions struct {
+HttpInfra httpinfra.HttpRouter
+Handler   {{classname}}HttpHandler
+}
+
+// {{classname}}RoutesPublished type for {{classname}} published routes
+type {{classname}}RoutesPublished int
+
+// Provide{{classname}}Routes creates a new {{classname}}RoutesPublished
+func Provide{{classname}}Routes(options {{classname}}PublisherOptions) ({{classname}}RoutesPublished, error) {
+
+if options.HttpInfra == nil {
+return 0, errors.New("missing mandatory HttpInfra field to publish {{classname}} Routes")
+}
+
+if options.Handler == nil {
+return 0, errors.New("missing mandatory field Handler to publish {{classname}} Routes")
+}
+
+var err error
+
+{{#operations}}{{#operation}}{{^vendorExtensions.signare-skip-code-generation}}
+    err = Publish{{operationId}}(options.HttpInfra, options.Handler)
+    if err != nil {
+    return 0, err
+    }{{/vendorExtensions.signare-skip-code-generation}}{{/operation}}{{/operations}}
+
+return 0, nil
+}
+
+{{#operations}}{{#operation}}{{^vendorExtensions.signare-skip-code-generation}}
+// Publish{{operationId}} publishes the {{operationId}} endpoint
+func Publish{{operationId}}(httpInfra httpinfra.HttpRouter,  handler {{classname}}HttpHandler) error {
+    opts := httpinfra.HandlerMatchOptions{Path: "{{path}}", Methods: []string{
+        http.Method{{httpMethod}},
+    },
+    Action: "{{vendorExtensions.signare-action}}",
+    }
+    err := httpInfra.RegisterRawHandler(opts, handler.HandleHttp{{operationId}})
+    if err != nil {
+        return err
+    }
+    return nil
+}
+
+{{/vendorExtensions.signare-skip-code-generation}}{{#vendorExtensions.signare-skip-code-generation}}
+    // Code not generated for Publish{{operationId}} as it does not return an object
+{{/vendorExtensions.signare-skip-code-generation}}{{/operation}}{{/operations}}

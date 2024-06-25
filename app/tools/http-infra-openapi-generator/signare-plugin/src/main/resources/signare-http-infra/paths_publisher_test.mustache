@@ -1,0 +1,22 @@
+{{>common_header}}
+package {{packageName}}_test
+
+import (
+    "testing"
+
+
+    "github.com/stretchr/testify/require"
+
+    "github.com/hyperledger-labs/signare/app/pkg/infra/httpinfra"
+    generatedHttpInfra "github.com/hyperledger-labs/signare/app/pkg/infra/generated/httpinfra"
+)
+
+{{#operations}}{{#operation}}{{^vendorExtensions.signare-skip-code-generation}}
+// Test_Publish{{operationId}}_Success test the Publish{{operationId}} happy path
+func Test_Publish{{operationId}}_Success(t *testing.T)  {
+    http := httpinfra.ProvideHttpRouter()
+    err := generatedHttpInfra.Publish{{operationId}}(http, generatedHttpInfra.Default{{classname}}HttpHandler{})
+    require.Nil(t, err)
+}
+
+{{/vendorExtensions.signare-skip-code-generation}}{{/operation}}{{/operations}}

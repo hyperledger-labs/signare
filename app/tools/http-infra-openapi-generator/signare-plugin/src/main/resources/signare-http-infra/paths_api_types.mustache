@@ -1,0 +1,31 @@
+{{>common_header}}
+package {{packageName}}
+
+import (
+    "github.com/hyperledger-labs/signare/app/pkg/infra/httpinfra"
+)
+
+{{#operations}}{{#operation}}
+    // {{operationId}}ResponseWrapper response definition
+    type {{operationId}}ResponseWrapper struct {
+    {{returnType}} {{returnType}}
+    ResponseInfo httpinfra.ResponseInfo
+    }
+
+    // {{operationId}}Request request definition
+    type {{operationId}}Request struct {
+    {{#allParams}}
+        {{#isInteger}}
+            {{#vendorExtensions.x-export-param-name}} {{{.}}}{{/vendorExtensions.x-export-param-name}} *{{dataType}}
+        {{/isInteger}}
+        {{^isInteger}}
+            {{#isLong}}
+                {{#vendorExtensions.x-export-param-name}} {{{.}}}{{/vendorExtensions.x-export-param-name}} *{{dataType}}
+            {{/isLong}}
+            {{^isLong}}
+                {{#vendorExtensions.x-export-param-name}} {{{.}}}{{/vendorExtensions.x-export-param-name}} {{dataType}}
+            {{/isLong}}
+        {{/isInteger}}
+    {{/allParams}}
+    }
+{{/operation}}{{/operations}}

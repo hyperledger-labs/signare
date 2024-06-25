@@ -1,0 +1,13 @@
+description: Too many incoming request at this moment.
+content:
+  application/json:
+    schema:
+      $ref: '../_index.yaml#/schemas/BaseError'
+    example:
+      error:
+        code: 429
+        status: TOO_MANY_REQ
+        details:
+          errorId: 51
+          message: Too many incoming request at this moment.
+          traceableErrorId: '8380122k-2254f-4c58-b3a0-e0a6e1231f23'

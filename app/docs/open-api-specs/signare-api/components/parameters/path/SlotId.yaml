@@ -1,0 +1,7 @@
+name: slotId
+in: path
+description: Slot identifier
+required: true
+schema:
+  type: string
+example: slot-1

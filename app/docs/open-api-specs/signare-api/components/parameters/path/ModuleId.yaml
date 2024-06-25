@@ -1,0 +1,7 @@
+name: moduleId
+in: path
+description: Hardware Security Module (HSM) identifier
+required: true
+schema:
+  type: string
+example: hsm-1

@@ -1,0 +1,50 @@
+# Permissions are just collections of actions that can be granted all at once by mapping a user to them
+permissions:
+  - id: allow-admin-actions
+    description: Grants access to admin endpoints and manage applications
+    actions:
+      - admin.applications.create
+      - admin.applications.describe
+      - admin.applications.edit
+      - admin.applications.list
+      - admin.applications.remove
+      - admin.modules.create
+      - admin.modules.describe
+      - admin.modules.edit
+      - admin.modules.list
+      - admin.modules.remove
+      - admin.slots.create
+      - admin.slots.describe
+      - admin.slots.list
+      - admin.slots.remove
+      - admin.slots.updatePin
+      - admin.users.create
+      - admin.users.describe
+      - admin.users.edit
+      - admin.users.list
+      - admin.users.remove
+      - application.accounts.create
+      - application.accounts.remove
+      - application.users.create
+      - application.users.describe
+      - application.users.edit
+      - application.users.list
+      - application.users.remove
+  - id: allow-application-admin-actions
+    description: Grants access to manage configuration resources associated with an specific application and rpc methods to manage accounts
+    actions:
+      - application.accounts.create
+      - application.accounts.remove
+      - application.users.create
+      - application.users.describe
+      - application.users.edit
+      - application.users.list
+      - application.users.remove
+      - rpc.method.eth_generateAccount
+      - rpc.method.eth_removeAccount
+      - rpc.method.eth_accounts
+  - id: allow-user-transaction-sign-actions
+    description: Grants access to sign transactions
+    actions:
+      - rpc.method.eth_signTransaction
+

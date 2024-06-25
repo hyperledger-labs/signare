@@ -1,0 +1,51 @@
+get:
+  operationId: admin.slots.describe
+  tags:
+    - Admin
+  summary: Gets a slot from a Hardware Security Module (HSM)
+  description: Describes the specified slot from the specified HSM
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ModuleId'
+    - $ref: '../../components/_index.yaml#/parameters/SlotId'
+  responses:
+    '200':
+      description: HSM details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/SlotDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+delete:
+  operationId: admin.slots.remove
+  tags:
+    - Admin
+  summary: Deletes a slot from a Hardware Security Module (HSM)
+  description: Deletes the specified slot configuration from the specified HSM
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ModuleId'
+    - $ref: '../../components/_index.yaml#/parameters/SlotId'
+  responses:
+    '200':
+      description: Deleted Slot
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/SlotDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '412':
+      $ref: '../../components/_index.yaml#/responses/FailedPreconditionResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

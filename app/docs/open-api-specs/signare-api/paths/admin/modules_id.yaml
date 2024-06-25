@@ -1,0 +1,79 @@
+get:
+  operationId: admin.modules.describe
+  tags:
+    - Admin
+  summary: Gets a Hardware Security Module (HSM)
+  description: Describes the specified HSM configuration
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ModuleId'
+  responses:
+    '200':
+      description: HSM details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/ModuleDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+put:
+  operationId: admin.modules.edit
+  tags:
+    - Admin
+  summary: Updates a Hardware Security Module (HSM)
+  description: Updates the specified HSM configuration
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ModuleId'
+  requestBody:
+    description: Information to update the HSM configuration. Missing or empty fields will delete that information
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/_index.yaml#/schemas/ModuleUpdate'
+  responses:
+    '200':
+      description: HSM details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/ModuleDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'
+
+delete:
+  operationId: admin.modules.remove
+  tags:
+    - Admin
+  summary: Deletes a Hardware Security Module (HSM)
+  description: Deletes the specified HSM configuration
+  parameters:
+    - $ref: '../../components/_index.yaml#/parameters/ModuleId'
+  responses:
+    '200':
+      description: Deleted HSM
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/_index.yaml#/schemas/ModuleDetail'
+    '400':
+      $ref: '../../components/_index.yaml#/responses/BadRequestResponse'
+    '403':
+      $ref: '../../components/_index.yaml#/responses/PermissionDeniedResponse'
+    '404':
+      $ref: '../../components/_index.yaml#/responses/NotFoundResponse'
+    '412':
+      $ref: '../../components/_index.yaml#/responses/FailedPreconditionResponse'
+    '500':
+      $ref: '../../components/_index.yaml#/responses/InternalServerErrorResponse'

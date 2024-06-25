@@ -1,0 +1,39 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaCreation'
+  spec:
+    type: object
+    x-required: mandatory
+    nullable: false
+    additionalProperties: false
+    properties:
+      roles:
+        type: array
+        x-required: mandatory
+        nullable: false
+        items:
+          type: string
+          description: |
+            List of roles assigned to the user
+          example: ['ApplicationAdministrator', 'TransactionSigner']
+      description:
+        type: string
+        x-required: optional
+        nullable: true
+        maxLength: 256
+        description: |
+          Description of the resource.
+    required:
+      - roles
+
+example:
+  meta:
+    id: 'user-1'
+  spec:
+    roles: ['ApplicationAdministrator', 'TransactionSigner']
+    description: "my user"
+
+required:
+  - spec

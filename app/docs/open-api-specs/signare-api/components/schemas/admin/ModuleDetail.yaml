@@ -1,0 +1,22 @@
+type: object
+additionalProperties: false
+properties:
+  meta:
+    $ref: '../../_index.yaml#/schemas/ResourceMetaDetail'
+  spec:
+    $ref: '../../_index.yaml#/schemas/ModuleSpec'
+
+example:
+  meta:
+    id: 'hsm-1'
+    resourceVersion: '7e032829-249d-4498-aa3e-344a16cd6a93'
+    creationDate: '1581675232372'
+    lastUpdate: '1581675232372'
+  spec:
+    configuration:
+      hsmKind: 'softHSM'
+    description: 'my hardware security module'
+
+required:
+  - meta
+  - spec

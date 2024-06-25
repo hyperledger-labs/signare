@@ -1,0 +1,12 @@
+permissions:
+  - id: allow-generated-actions
+    description: Grants access to generated actions
+    actions:
+      - generated.action.one
+      - generated.action.two
+      - generated.action.three
+  - id: allow-manual-actions
+    description: Grants access to manual actions
+    actions:
+      - manual.action.four
+      - manual.action.five
