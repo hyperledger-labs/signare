@@ -18,6 +18,9 @@ RUN git checkout ${SOFTHSM2_VERSION} -b ${SOFTHSM2_VERSION} \
     && make \
     && make install
 
+RUN ldd /usr/local/lib/softhsm/libsofthsm2.so | tr -s [:blank:] '\n' | grep ^/ | xargs -I % install -D % /dist/%
+
+
 FROM $BUILD_BASE_IMAGE AS signare-builder
 
 ENV USER=adhara
@@ -45,14 +48,23 @@ COPY . .
 
 RUN make -C deployment build
 
+# install all required dynamic libraries used by C
+RUN ldd /signare/deployment/bin/signare_linux_amd64 | tr -s [:blank:] '\n' | grep ^/ | xargs -I % install -D % /dist/%
+# provide compatibility with certain Alpine Linux versions
+RUN ln -s ld-musl-x86_64.so.1 /dist/lib/libc.musl-x86_64.so.1
+
 FROM $BASE_IMAGE as signare
 
 COPY --from=signare-builder /etc/passwd /etc/passwd
 COPY --from=signare-builder /etc/group /etc/group
 COPY --from=signare-builder /signare/deployment/bin/signare_linux_amd64 /signare/bin/signare
+COPY --from=signare-builder /dist /
 
+COPY --from=softhsm-builder /dist /
 COPY --from=softhsm-builder /usr/local/lib/softhsm/libsofthsm2.so /usr/local/lib/softhsm/libsofthsm2.so
 
 USER adhara:adhara
 
 ENTRYPOINT [ "/signare/bin/signare" ]
+
+
