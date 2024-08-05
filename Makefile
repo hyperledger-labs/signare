@@ -1,6 +1,6 @@
 SHELL=/bin/bash -o pipefail
 
-BASE_IMAGE ?= "golang:1.22"
+BASE_IMAGE ?= "scratch"
 BUILD_BASE_IMAGE ?= "golang:1.22"
 
 DOCKER_LOCAL_TAG = local
@@ -24,3 +24,4 @@ docker_build:
 		-t ${DOCKER_IMAGE_NAME}:${DOCKER_LOCAL_TAG} \
 		-f ./Dockerfile \
 		./
+
